@@ -12,35 +12,36 @@ using LinearAlgebra
 
 export reksolve, rpick
 
-function reksolve(A,b;eps = 1e-6, maxcount=100)
+function reksolve(A,b;eps = 1e-12, maxcount=1000)
     m,n = size(A)
     @assert m >= n
 
     z = copy(b)
     x = zeros(n)
 
-    rowsums  = sum(abs2,A,dims=2)
-    Fnorm2   = sum(rowsums)
-    Fnorm    = sqrt(Fnorm2)
-    rowprobs = rowsums / Fnorm
+    rowsum  = sum(abs2,A,dims=2)
+    Fnorm2  = sum(rowsum)
+    Fnorm   = sqrt(Fnorm2)
+    rowprob = rowsum / Fnorm2
 
-    colsums  = sum(abs2,A,dims=1)
-    colprobs = colsums / Fnorm
+    colsum  = sum(abs2,A,dims=1)
+    colprob = colsum / Fnorm2
+
+    @assert abs(sum(colsum)-Fnorm2) <= eps
 
     subcount = 8*min(m,n)
 
     for k = 1:maxcount
         for kk = 1:subcount
-            i = rpick(rowprobs)
-            j = rpick(colprobs)
-            z .= z .- (dot(A[:,j],z)/colsums[j]) .* A[:,j]
-            x .= x .+ ((b[i] - z[i]  - dot(x,A[i,:]))/rowsums[i]) .* A[i,:]
+            i = rpick(rowprob)
+            j = rpick(colprob)
+            z .-= (dot(A[:,j],z)/colsum[j]) .* A[:,j]
+            x .+= ((b[i] - z[i] - dot(x,A[i,:]))/rowsum[i]) .* A[i,:]
         end
         
-        normx = norm(x)
+        tol = eps * Fnorm * norm(x)
 
-        if ( norm(A*x - b - z) <= eps * Fnorm * normx &&
-             norm(A'*z) <= eps * Fnorm2 * normx )
+        if norm(A*x .- b .+ z) <= tol && norm(A'*z) <= tol
             return x,k
         end
     end
