@@ -14,7 +14,6 @@ export reksolve, rpick
 
 function reksolve(A,b;eps = 1e-12, maxcount=1000)
     m,n = size(A)
-    @assert m >= n
 
     z = copy(b)
     x = zeros(n)
@@ -27,7 +26,14 @@ function reksolve(A,b;eps = 1e-12, maxcount=1000)
     colsum  = sum(abs2,A,dims=1)
     colprob = colsum / Fnorm2
 
-    @assert abs(sum(colsum)-Fnorm2) <= eps
+    if abs(sum(colsum)-Fnorm2) > eps
+        println("## WARNING:")
+        print("# ")
+        @show sum(colsum)
+        print("# ")
+        @show Fnorm2
+        println("# err = ", abs(sum(colsum) - Fnorm2))
+    end
 
     subcount = 8*min(m,n)
 
