@@ -8,7 +8,7 @@ module REK
 
 using LinearAlgebra
 
-export solve, rpick
+export solve
 
 function solve(A::Matrix{T}, b::Vector{T};
                eps = 1e-12,
@@ -61,6 +61,31 @@ function rpick(probs)
         end
     end
     return length(probs)
+end
+
+
+## tests
+
+test(m,n; flags...) = test(Complex{Float64},m,n; flags...)
+
+function test(::Type{Float64},m,n; flags...)
+    A = randn(m,n)
+    b = randn(m)
+    @time x0 = A\b
+    @time x1,k = solve(A,b; flags...)
+    (backslash = x0, kaczmarz = x1, itercount = k) 
+end
+
+function test(::Type{Complex{Float64}},m,n; flags...)
+    A = randn(m,n) + im*randn(m,n)
+    b = randn(m) + im*randn(m)
+    @time backslash = A\b
+    @time kaczmarz,count = solve(A,b; flags...)
+    print("# ")
+    @show maximum(abs,backslash-kaczmarz)
+    @show norm(backslash)
+    @show norm(kaczmarz)
+    (backslash = backslash, kaczmarz = kaczmarz, count = count) 
 end
 
 end#module
