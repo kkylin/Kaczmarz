@@ -22,13 +22,13 @@ function solve(A::Matrix{T}, b::Vector{T};
 
     ## probabilities for sampling rows and cols do not
     ## change
-    rowsum  = sum(abs2,A,dims=2)
+    row     = [conj(A[i,:]) for i=1:m]
+    rowsum  = map(v->sum(abs2,v), row)
     rowprob = rowsum ./ sum(rowsum)
 
-    colsum  = sum(abs2,A,dims=1)
+    col     = [A[:,j] for j=1:n]
+    colsum  = map(v->sum(abs2,v), col)
     colprob = colsum ./ sum(colsum)
-
-    Ac = conj(A)
 
     ## these are needed for the convergence test
     epsFnorm = eps * sqrt(sum(abs2,A))
@@ -39,10 +39,8 @@ function solve(A::Matrix{T}, b::Vector{T};
         for kk = 1:subcount
             i = rpick(rowprob)
             j = rpick(colprob)
-            irow = view(Ac,i,1:n)
-            jcol = view(A,1:m,j)
-            z .-= (dot(jcol,z)/colsum[j]) .* jcol
-            x .+= ((b[i] - z[i] - dot(irow,x))/rowsum[i]) .* irow
+            z .-= (dot(col[j],z)/colsum[j]) .* col[j]
+            x .+= ((b[i] - z[i] - dot(row[i],x))/rowsum[i]) .* row[i]
         end
         
         tol = epsFnorm * norm(x)
