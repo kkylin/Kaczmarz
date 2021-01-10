@@ -10,9 +10,10 @@ using LinearAlgebra
 
 export solve
 
-function solve(A::Matrix{T}, b::Vector{T};
+function solve(A::AbstractMatrix{T},
+               b::AbstractVector{T};
                eps = 1e-12,
-               maxcount=1000) where T
+               maxcount=1000) where T <: Number
 
     m,n = size(A)
 
