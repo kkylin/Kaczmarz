@@ -1,8 +1,9 @@
 ## REK.jl
 
-## The Random Extended Kaczmarz method.  See A Zouzias and
-## NM Freris, SIAM J Matrix Anal Appl 34 (2013),
-## doi:10.1137/120889897
+## The Random Extended Kaczmarz method as described in
+
+## A Zouzias and NM Freris, SIAM J Matrix Anal Appl 34
+## (2013), doi:10.1137/120889897
 
 module REK
 
@@ -10,12 +11,14 @@ using LinearAlgebra
 
 export solve, rpick
 
-function solve(A,b; eps = 1e-12, maxcount=1000)
+function solve(A::Matrix{T}, b::Vector{T};
+               eps = 1e-12,
+               maxcount=1000) where T
 
     m,n = size(A)
 
     z = copy(b)  ## we'll be modifying z and b shouldn't change
-    x = zeros(n)
+    x = zeros(T,n)
 
     ## probabilities for sampling rows and cols do not
     ## change
@@ -24,6 +27,8 @@ function solve(A,b; eps = 1e-12, maxcount=1000)
 
     colsum  = sum(abs2,A,dims=1)
     colprob = colsum ./ sum(colsum)
+
+    Ac = conj(A)
 
     ## these are needed for the convergence test
     epsFnorm = eps * sqrt(sum(abs2,A))
@@ -35,7 +40,7 @@ function solve(A,b; eps = 1e-12, maxcount=1000)
             i = rpick(rowprob)
             j = rpick(colprob)
             z .-= (dot(A[:,j],z)/colsum[j]) .* A[:,j]
-            x .+= ((b[i] - z[i] - dot(x,A[i,:]))/rowsum[i]) .* A[i,:]
+            x .+= ((b[i] - z[i] - dot(Ac[i,:],x))/rowsum[i]) .* Ac[i,:]
         end
         
         tol = epsFnorm * norm(x)
