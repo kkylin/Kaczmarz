@@ -10,23 +10,26 @@ using LinearAlgebra
 
 export reksolve, rpick
 
-function reksolve(A,b;eps = 1e-12, maxcount=1000)
+function reksolve(A,b; eps = 1e-12, maxcount=1000)
 
     m,n = size(A)
 
-    z = copy(b)
+    z = copy(b)  ## we'll be modifying z and b shouldn't change
     x = zeros(n)
 
-    rowsum   = sum(abs2,A,dims=2)
-    rowprob  = rowsum ./ sum(rowsum)
+    ## probabilities for sampling rows and cols do not
+    ## change
+    rowsum  = sum(abs2,A,dims=2)
+    rowprob = rowsum ./ sum(rowsum)
 
     colsum  = sum(abs2,A,dims=1)
     colprob = colsum ./ sum(colsum)
 
-    Fnorm2   = sum(abs2,A)
-    epsFnorm = eps * sqrt(Fnorm2)
+    ## these are needed for the convergence test
+    epsFnorm = eps * sqrt(sum(abs2,A))
     subcount = 8*min(m,n)
 
+    ## main loop
     for k = 1:maxcount
         for kk = 1:subcount
             i = rpick(rowprob)
