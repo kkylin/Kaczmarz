@@ -4,8 +4,6 @@
 ## NM Freris, SIAM J Matrix Anal Appl 34 (2013),
 ## doi:10.1137/120889897
 
-## Still to add: convergence criterion
-
 module REK
 
 using LinearAlgebra
