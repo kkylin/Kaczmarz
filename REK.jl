@@ -17,23 +17,13 @@ function reksolve(A,b;eps = 1e-12, maxcount=1000)
     z = copy(b)
     x = zeros(n)
 
-    rowsum  = sum(abs2,A,dims=2)
-    Fnorm2  = sum(rowsum)
-    Fnorm   = sqrt(Fnorm2)
-    rowprob = rowsum / Fnorm2
+    rowsum   = sum(abs2,A,dims=2)
+    Fnorm2   = sum(rowsum)
+    epsFnorm = eps * sqrt(Fnorm2)
+    rowprob  = rowsum ./ Fnorm2
 
     colsum  = sum(abs2,A,dims=1)
-    colprob = colsum / Fnorm2
-
-    ## sanity check
-    if abs(sum(colsum)-Fnorm2) > eps
-        println("## WARNING:")
-        print("# ")
-        @show sum(colsum)
-        print("# ")
-        @show Fnorm2
-        println("# err = ", abs(sum(colsum) - Fnorm2))
-    end
+    colprob = colsum ./ Fnorm2
 
     subcount = 8*min(m,n)
 
@@ -45,7 +35,7 @@ function reksolve(A,b;eps = 1e-12, maxcount=1000)
             x .+= ((b[i] - z[i] - dot(x,A[i,:]))/rowsum[i]) .* A[i,:]
         end
         
-        tol = eps * Fnorm * norm(x)
+        tol = epsFnorm * norm(x)
 
         if norm(A*x .- b .+ z) <= tol && norm(A'*z) <= tol
             return x,k*subcount
