@@ -13,6 +13,7 @@ using LinearAlgebra
 export reksolve, rpick
 
 function reksolve(A,b;eps = 1e-12, maxcount=1000)
+
     m,n = size(A)
 
     z = copy(b)
@@ -26,6 +27,7 @@ function reksolve(A,b;eps = 1e-12, maxcount=1000)
     colsum  = sum(abs2,A,dims=1)
     colprob = colsum / Fnorm2
 
+    ## sanity check
     if abs(sum(colsum)-Fnorm2) > eps
         println("## WARNING:")
         print("# ")
