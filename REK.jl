@@ -68,7 +68,7 @@ end
 
 test(m=3,n=3; flags...) = test(Complex{Float64},m,n; flags...)
 
-function test(::Type{Float64},m,n; flags...)
+function test(::Type{Float64},m=3,n=3; flags...)
     A = randn(m,n)
     b = randn(m)
     @time x0 = A\b
@@ -76,7 +76,7 @@ function test(::Type{Float64},m,n; flags...)
     (backslash = x0, kaczmarz = x1, itercount = k) 
 end
 
-function test(::Type{Complex{Float64}},m,n; flags...)
+function test(::Type{Complex{Float64}},m=3,n=3; flags...)
     A = randn(m,n) + im*randn(m,n)
     b = randn(m) + im*randn(m)
     @time backslash = A\b
