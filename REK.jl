@@ -39,8 +39,10 @@ function solve(A::Matrix{T}, b::Vector{T};
         for kk = 1:subcount
             i = rpick(rowprob)
             j = rpick(colprob)
-            z .-= (dot(A[:,j],z)/colsum[j]) .* A[:,j]
-            x .+= ((b[i] - z[i] - dot(Ac[i,:],x))/rowsum[i]) .* Ac[i,:]
+            irow = view(Ac,i,1:n)
+            jcol = view(A,1:m,j)
+            z .-= (dot(jcol,z)/colsum[j]) .* jcol
+            x .+= ((b[i] - z[i] - dot(irow,x))/rowsum[i]) .* irow
         end
         
         tol = epsFnorm * norm(x)
