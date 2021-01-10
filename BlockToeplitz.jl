@@ -1,0 +1,3 @@
+module BlockToeplitz
+
+end #module
