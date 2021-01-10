@@ -12,7 +12,7 @@ export solve
 
 function solve(A::AbstractMatrix{T},
                b::AbstractVector{T};
-               eps = 1e-12,
+               eps = 1e-6,
                maxcount=1000) where T <: Number
 
     m,n = size(A)
