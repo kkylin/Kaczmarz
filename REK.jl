@@ -18,7 +18,7 @@ function solve(A::Matrix{T}, b::Vector{T};
 
     ## probabilities for sampling rows and cols do not
     ## change
-    row     = map(i->conj(view(A,i,1:n)), 1:m)
+    row     = map(i->view(A,i,1:n), 1:m)
     rowsum  = map(v->sum(abs2,v), row)
     rowprob = rowsum ./ sum(rowsum)
 
@@ -39,7 +39,7 @@ function solve(A::Matrix{T}, b::Vector{T};
             i = rpick(rowprob)
             j = rpick(colprob)
             z .-= (dot(col[j],z)/colsum[j]) .* col[j]
-            x .+= ((b[i] - z[i] - dot(row[i],x))/rowsum[i]) .* row[i]
+            x .+= ((b[i] - z[i] - dot(conj.(row[i]),x))/rowsum[i]) .* conj.(row[i])
         end
         
         tol = epsFnorm * norm(x)
