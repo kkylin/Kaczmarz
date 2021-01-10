@@ -23,11 +23,11 @@ function solve(A::Matrix{T}, b::Vector{T};
     ## probabilities for sampling rows and cols do not
     ## change
     row     = [conj(A[i,:]) for i=1:m]
-    rowsum  = map(v->sum(abs2,v), row)
+    rowsum  = [sum(abs2,v) for v in row]
     rowprob = rowsum ./ sum(rowsum)
 
     col     = [A[:,j] for j=1:n]
-    colsum  = map(v->sum(abs2,v), col)
+    colsum  = [sum(abs2,v) for v in col]
     colprob = colsum ./ sum(colsum)
 
     ## these are needed for the convergence test
