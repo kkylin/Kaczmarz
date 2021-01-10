@@ -66,7 +66,7 @@ end
 
 ## tests
 
-test(m,n; flags...) = test(Complex{Float64},m,n; flags...)
+test(m=3,n=3; flags...) = test(Complex{Float64},m,n; flags...)
 
 function test(::Type{Float64},m,n; flags...)
     A = randn(m,n)
@@ -81,9 +81,11 @@ function test(::Type{Complex{Float64}},m,n; flags...)
     b = randn(m) + im*randn(m)
     @time backslash = A\b
     @time kaczmarz,count = solve(A,b; flags...)
-    print("# ")
+    print("## ")
     @show maximum(abs,backslash-kaczmarz)
+    print("## ")
     @show norm(backslash)
+    print("## ")
     @show norm(kaczmarz)
     (backslash = backslash, kaczmarz = kaczmarz, count = count) 
 end
