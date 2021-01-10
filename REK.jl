@@ -16,12 +16,13 @@ function solve(A::Matrix{T}, b::Vector{T};
 
     m,n = size(A)
 
-    ## probabilities for sampling rows and cols do not
-    ## change
+    ## precompute rows, their squared sums, and
+    ## corresponding probabilities
     row     = map(i->view(A,i,1:n), 1:m)
     rowsum  = map(v->sum(abs2,v), row)
     rowprob = rowsum ./ sum(rowsum)
 
+    ## same for cols
     col     = map(j->view(A,1:m,j), 1:n)
     colsum  = map(v->sum(abs2,v), col)
     colprob = colsum ./ sum(colsum)
