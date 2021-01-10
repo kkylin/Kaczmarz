@@ -8,9 +8,9 @@ module REK
 
 using LinearAlgebra
 
-export reksolve, rpick
+export solve, rpick
 
-function reksolve(A,b; eps = 1e-12, maxcount=1000)
+function solve(A,b; eps = 1e-12, maxcount=1000)
 
     m,n = size(A)
 
