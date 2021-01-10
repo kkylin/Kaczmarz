@@ -22,11 +22,11 @@ function solve(A::Matrix{T}, b::Vector{T};
 
     ## probabilities for sampling rows and cols do not
     ## change
-    row     = map(i->conj(A[i,:]), i=1:m)
+    row     = map(i->conj(A[i,:]), 1:m)
     rowsum  = map(v->sum(abs2,v), row)
     rowprob = rowsum ./ sum(rowsum)
 
-    col     = map(j->A[:,j], j=1:n)
+    col     = map(j->A[:,j], 1:n)
     colsum  = map(v->sum(abs2,v), col)
     colprob = colsum ./ sum(colsum)
 
