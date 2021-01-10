@@ -1,8 +1,7 @@
 ## REK.jl
 
-## The Random Extended Kaczmarz method as described in
-
-## A Zouzias and NM Freris, SIAM J Matrix Anal Appl 34
+## A Zouzias and NM Freris, "Randomized extended Kaczmarz
+## for solving least squares," SIAM J Matrix Anal Appl 34
 ## (2013), doi:10.1137/120889897
 
 module REK
