@@ -18,13 +18,13 @@ function reksolve(A,b;eps = 1e-12, maxcount=1000)
     x = zeros(n)
 
     rowsum   = sum(abs2,A,dims=2)
-    Fnorm2   = sum(rowsum)
-    epsFnorm = eps * sqrt(Fnorm2)
-    rowprob  = rowsum ./ Fnorm2
+    rowprob  = rowsum ./ sum(rowsum)
 
     colsum  = sum(abs2,A,dims=1)
-    colprob = colsum ./ Fnorm2
+    colprob = colsum ./ sum(colsum)
 
+    Fnorm2   = sum(abs2,A)
+    epsFnorm = eps * sqrt(Fnorm2)
     subcount = 8*min(m,n)
 
     for k = 1:maxcount
