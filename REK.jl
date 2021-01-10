@@ -42,10 +42,10 @@ function reksolve(A,b;eps = 1e-12, maxcount=1000)
         tol = eps * Fnorm * norm(x)
 
         if norm(A*x .- b .+ z) <= tol && norm(A'*z) <= tol
-            return x,k
+            return x,k*subcount
         end
     end
-    return x,maxcount
+    return x,maxcount*subcount
 end
 
 function rpick(probs)
