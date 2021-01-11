@@ -1,15 +1,14 @@
 ## BlockToeplitz.jl
 
-## This design still leads to a lot of allocations, though
-## none of the matrices are especially large.  Can be more
-## efficient still:
+## This design still leads to a lot of allocations.  Can be
+## more efficient still:
 
 #=
 
 1) view() can return a lightweight object instead of
-   allocating a matrix
+   allocating a matrix; and
 
-2) for Kaczmarz, can define a lightweight conj() object
+2) for Kaczmarz, can define a lightweight conj() object.
 
 =#
 
