@@ -39,7 +39,7 @@ function solve(A::AbstractMatrix{T},
             i = rpick(rowprob)
             j = rpick(colprob)
             z .-= (dot(view(A,:,j),z)/colsum[j]) .* view(A,:,j)
-            x .+= ((b[i] - z[i] - dot(conj.(view(A,i,:)),x))/rowsum[i]) .* conj.(view(A,i,:))
+            x .+= ((b[i] - z[i] - dot(conj(view(A,i,:)),x))/rowsum[i]) .* conj(view(A,i,:))
         end
         
         tol = epsFnorm * norm(x)
