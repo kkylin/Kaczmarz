@@ -4,6 +4,8 @@
 ## for solving least squares," SIAM J Matrix Anal Appl 34
 ## (2013), doi:10.1137/120889897
 
+## This design is perhaps too rigid.
+
 module REK
 
 using LinearAlgebra
