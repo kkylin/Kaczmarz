@@ -1,3 +1,18 @@
+## BlockToeplitz.jl
+
+## This design still leads to a lot of allocations, though
+## none of the matrices are especially large.  Can be more
+## efficient still:
+
+#=
+
+1) view() can return a lightweight object instead of
+   allocating a matrix
+
+2) for Kaczmarz, can define a lightweight conj() object
+
+=#
+
 module BlockToeplitz
 
 struct BTMatrix{T} <: AbstractMatrix{T}
