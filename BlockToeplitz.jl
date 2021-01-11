@@ -1,7 +1,7 @@
 module BlockToeplitz
 
-struct BTMatrix
-    a::AbstractMatrix
+struct BTMatrix{T} <: AbstractMatrix{T}
+    a::AbstractMatrix{T}
     r::Int
     m::Int
     n::Int
@@ -9,12 +9,10 @@ struct BTMatrix
     N::Int
 end
 
-function BTMatrix(v::AbstractVector, r::Int) = BTMatrix(reshape(v,length(v),1), r)
+BTMatrix(v::AbstractVector, r::Int) = BTMatrix(reshape(v,length(v),1), r)
 
 function BTMatrix(a::AbstractMatrix, r::Int)
     m,n = size(a)
-    M   = m
-    N   = r*n
     return BTMatrix(a, r, m, n, m-r+1, r*n)
 end
 
@@ -26,9 +24,13 @@ end
 
 import Base:getindex,setindex!,view,size
 
-size(A::BTMatrix) = size(A.a)[1],r*size(A,a)[2]
+size(A::BTMatrix) = A.M,A.N
 
 getindex(A::BTMatrix, i::Int, j::Int) = A.a[i-1-div(j-1,A.n)+A.r, (j-1)%A.n+1]
+
+function setindex!(A::BTMatrix, i::Int, j::Int, rhs)
+    A.a[i-1-div(j-1,A.n)+A.r, (j-1)%A.n+1] = rhs
+end
 
 view(A::BTMatrix, i::Int, j::Int) = getindex(A, i, j)
 
