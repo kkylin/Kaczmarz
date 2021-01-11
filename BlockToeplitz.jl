@@ -7,13 +7,18 @@ struct BTMatrix{T} <: AbstractMatrix{T}
     n::Int
     M::Int
     N::Int
+    row::Vector{T}
+    col::Vector{T}
 end
 
 BTMatrix(v::AbstractVector, r::Int) = BTMatrix(reshape(v,length(v),1), r)
 
-function BTMatrix(a::AbstractMatrix, r::Int)
+function BTMatrix(a::AbstractMatrix{T}, r::Int) where T
     m,n = size(a)
-    return BTMatrix(a, r, m, n, m-r+1, r*n)
+    M = m-r+1
+    N = r*n
+    # return BTMatrix(a, r, m, n, M, N)
+    return BTMatrix(a, r, m, n, M, N, zeros(T,N), zeros(T,M))
 end
 
 ## If we don't mind allocating lots, e.g., view() returns a
@@ -35,15 +40,23 @@ end
 view(A::BTMatrix, i::Int, j::Int) = getindex(A, i, j)
 
 function view(A::BTMatrix, i::Int, ::Colon)
-    map(j->A[i,j], 1:A.N)
+    # map(j->A[i,j], 1:A.N)
+    for j=1:A.N
+        A.row[j] = A[i,j]
+    end
+    return A.row
 end
 
 function view(A::BTMatrix, ::Colon, j::Int)
-    map(i->A[i,j], 1:A.M)
+    # map(i->A[i,j], 1:A.M)
+    for i=1:A.M
+        A.col[i] = A[i,j]
+    end
+    return A.col
 end
 
-function view(A::BTMatrix, ::Colon, ::Colon)
-    [A[i,j] for i=1:A.M,j=1:A.N]
-end
+# function view(A::BTMatrix, ::Colon, ::Colon)
+#     [A[i,j] for i=1:A.M,j=1:A.N]
+# end
 
 end #module
