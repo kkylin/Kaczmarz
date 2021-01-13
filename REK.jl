@@ -38,10 +38,11 @@ function solve(A::AbstractMatrix{T},
     z = copy(b)  ## we'll be modifying z and b shouldn't change
     x = zeros(T,n)
 
-    for k = 1:maxcount
-        for kk = 1:subcount
+    for c = 1:maxcount
+        for cc = 1:subcount
             i = rpick(rowprob)
             j = rpick(colprob)
+            ## maybe use BLAS?
             z .-= (dot(col[j],z)/colsum[j]) .* col[j]
             x .+= ((b[i] - z[i] - dot(row[i],x))/rowsum[i]) .* row[i]
         end
