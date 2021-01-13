@@ -56,36 +56,38 @@ function setindex!(A::BTMatrix, i::Int, j::Int, rhs)
 end
 
 
-## view() basically returns a submatrix
-
-struct BTSubMatrix{T} <: AbstractMatrix{T}
+## column vectors
+struct BTCol{T} <: AbstractVector{T}
     A::BTMatrix{T}
     m::Int
-    n::Int
-    i0::Int
-    j0::Int
+    j::Int
 end
 
-size(A::BTSubMatrix) = A.m,A.n
-
-view(A::BTMatrix, i::Int, j::Int) = reshape([getindex(A, i, j)],1,1)
-
-function view(A::BTMatrix, i::Int, ::Colon)
-    m,n = size(A)
-    BTSubMatrix(A, 1, n, i-1, 0)
-end
+size(A::BTCol) = (A.m,)
 
 function view(A::BTMatrix, ::Colon, j::Int)
-    m,n = size(A)
-    BTSubMatrix(A, m, 1, 0, j-1)
+    BTCol(A, size(A)[1], j)
 end
 
-function getindex(A::BTSubMatrix, i::Int, j::Int)
-    A.A[A.i0+i,A.j0+j]
+function getindex(A::BTCol, i::Int)
+    A.A[i,A.j]
 end
 
-function setindex!(A::BTSubMatrix, i::Int, j::Int, rhs)
-    A.A[A.i0+i,A.j0+j] = rhs
+## row vectors
+struct BTRow{T} <: AbstractVector{T}
+    A::BTMatrix{T}
+    n::Int
+    i::Int
+end
+
+size(A::BTRow) = (A.n,)
+
+function view(A::BTMatrix, i::Int, ::Colon)
+    BTRow(A, size(A)[2], i)
+end
+
+function getindex(A::BTRow, j::Int)
+    A.A[A.i,j]
 end
 
 end #module
