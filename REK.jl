@@ -31,7 +31,7 @@ function solve(A::AbstractMatrix{T},
     colprob = colsum ./ sum(colsum)
 
     ## these are needed for the convergence test
-    epsFnorm = eps * sqrt(sum(abs2,A))
+    epsFnorm2 = eps^2 * sum(abs2,A)
     subcount = 8*min(m,n)
 
     ## main loop
@@ -46,9 +46,11 @@ function solve(A::AbstractMatrix{T},
             x .+= ((b[i] - z[i] - dot(row[i],x))/rowsum[i]) .* row[i]
         end
         
-        tol = epsFnorm * norm(x)
+        tol2 = epsFnorm2 * sum(abs2,x)
 
-        if norm(A*x .- b .+ z) <= tol && norm(A'*z) <= tol
+        # if norm(A*x .- b .+ z) <= tol && norm(A'*z) <= tol
+        if ( sum(i->abs2(dot(row[i],x) - b[i] + z[i]), 1:m) <= tol2 &&
+             sum(j->abs2(dot(col[j],z)), 1:n) <= tol2 )
             return x,k*subcount
         end
     end
