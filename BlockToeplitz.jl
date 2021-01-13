@@ -47,32 +47,45 @@ import Base:getindex,setindex!,view,size
 
 size(A::BTMatrix) = A.M,A.N
 
-getindex(A::BTMatrix, i::Int, j::Int) = A.a[i-1-div(j-1,A.n)+A.r, (j-1)%A.n+1]
+function getindex(A::BTMatrix, i::Int, j::Int)
+    A.a[i-1-div(j-1,A.n)+A.r, (j-1)%A.n+1]
+end
 
 function setindex!(A::BTMatrix, i::Int, j::Int, rhs)
     A.a[i-1-div(j-1,A.n)+A.r, (j-1)%A.n+1] = rhs
 end
 
-view(A::BTMatrix, i::Int, j::Int) = getindex(A, i, j)
+
+## view() basically returns a submatrix
+
+struct BTSubMatrix{T} <: AbstractMatrix{T}
+    A::BTMatrix{T}
+    m::Int
+    n::Int
+    i0::Int
+    j0::Int
+end
+
+size(A::BTSubMatrix) = A.m,A.n
+
+view(A::BTMatrix, i::Int, j::Int) = reshape([getindex(A, i, j)],1,1)
 
 function view(A::BTMatrix, i::Int, ::Colon)
-    map(j->A[i,j], 1:A.N)
-    # for j=1:A.N
-    #     A.row[j] = A[i,j]
-    # end
-    # return A.row
+    m,n = size(A)
+    BTSubMatrix(A, 1, n, i-1, 0)
 end
 
 function view(A::BTMatrix, ::Colon, j::Int)
-    map(i->A[i,j], 1:A.M)
-    # for i=1:A.M
-    #     A.col[i] = A[i,j]
-    # end
-    # return A.col
+    m,n = size(A)
+    BTSubMatrix(A, m, 1, 0, j-1)
 end
 
-# function view(A::BTMatrix, ::Colon, ::Colon)
-#     [A[i,j] for i=1:A.M,j=1:A.N]
-# end
+function getindex(A::BTSubMatrix, i::Int, j::Int)
+    A.A[A.i0+i,A.j0+j]
+end
+
+function setindex!(A::BTSubMatrix, i::Int, j::Int, rhs)
+    A.A[A.i0+i,A.j0+j] = rhs
+end
 
 end #module
