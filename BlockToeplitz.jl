@@ -43,7 +43,7 @@ end
 ## more efficient, then we'll also need to define getindex()
 ## and setindex!() for View objects.
 
-import Base:getindex,setindex!,view,size
+import Base:conj,getindex,setindex!,size,view
 
 size(A::BTMatrix) = A.M,A.N
 
@@ -89,5 +89,16 @@ end
 function getindex(A::BTRow, j::Int)
     A.A[A.i,j]
 end
+
+## conjugate
+struct BTConj{T} <: AbstractVector{T}
+    v::Union{BTRow{T},BTCol{T}}
+end
+
+size(A::BTConj) = size(A.v)
+getindex(A::BTConj, i::Int) = conj(A.v[i])
+
+conj(v::BTRow) = BTConj(v)
+conj(v::BTCol) = BTConj(v)
 
 end #module
