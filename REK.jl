@@ -21,11 +21,13 @@ function solve(A::AbstractMatrix{T},
 
     ## precompute rows, their squared sums, and
     ## corresponding probabilities
-    rowsum  = map(i->sum(abs2,view(A,i,:)), 1:m)
+    row     = map(i->conj(view(A,i,:)), 1:m)
+    rowsum  = map(r->sum(abs2,r), row)
     rowprob = rowsum ./ sum(rowsum)
 
     ## same for cols
-    colsum  = map(j->sum(abs2,view(A,:,j)), 1:n)
+    col     = map(j->view(A,:,j), 1:n)
+    colsum  = map(c->sum(abs2,c), col)
     colprob = colsum ./ sum(colsum)
 
     ## these are needed for the convergence test
@@ -40,8 +42,8 @@ function solve(A::AbstractMatrix{T},
         for kk = 1:subcount
             i = rpick(rowprob)
             j = rpick(colprob)
-            z .-= (dot(view(A,:,j),z)/colsum[j]) .* view(A,:,j)
-            x .+= ((b[i] - z[i] - dot(conj(view(A,i,:)),x))/rowsum[i]) .* conj(view(A,i,:))
+            z .-= (dot(col[j],z)/colsum[j]) .* col[j]
+            x .+= ((b[i] - z[i] - dot(row[i],x))/rowsum[i]) .* row[i]
         end
         
         tol = epsFnorm * norm(x)
