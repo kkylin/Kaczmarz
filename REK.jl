@@ -38,26 +38,22 @@ function solve(A::AbstractMatrix{T},
     z = copy(b)  ## we'll be modifying z and b shouldn't change
     x = zeros(T,n)
 
+    iabs2 = i->abs2(dot(row[i],x) - b[i] + z[i])
+    jabs2 = j->abs2(dot(col[j],z))
+
     for c = 1:maxcount
         for cc = 1:subcount
             i = rpick(rowprob)
             j = rpick(colprob)
 
-            ## somehow this is faster than combining the
-            ## expressions
-            a = dot(col[j],z)/colsum[j]
-            z .-=  a .* col[j]
-
-            ## ditto
-            a = (b[i] - z[i] - dot(row[i],x)) / rowsum[i]
-            x .+= a .* row[i]
+            z .-= dot(col[j],z)/colsum[j] .* col[j]
+            x .+= (b[i] - z[i] - dot(row[i],x)) / rowsum[i] .* row[i]
         end
         
         tol2 = epsFnorm2 * sum(abs2,x)
 
         # if norm(A*x .- b .+ z) <= tol && norm(A'*z) <= tol
-        if ( sum(i->abs2(dot(row[i],x) - b[i] + z[i]), 1:m) <= tol2 &&
-             sum(j->abs2(dot(col[j],z)), 1:n) <= tol2 )
+        if ( sum(iabs2,1:m) <= tol2 && sum(jabs2,1:n) <= tol2 )
             return x,c*subcount
         end
     end
