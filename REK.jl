@@ -38,8 +38,8 @@ function solve(A::AbstractMatrix{T},
     z = copy(b)  ## we'll be modifying z and b shouldn't change
     x = zeros(T,n)
 
-    iabs2 = i->abs2(dot(row[i],x) - b[i] + z[i])
-    jabs2 = j->abs2(dot(col[j],z))
+    iabs2(i) = abs2(dot(row[i],x) - b[i] + z[i])
+    jabs2(j) = abs2(dot(col[j],z))
 
     for c = 1:maxcount
         for cc = 1:subcount
