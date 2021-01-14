@@ -42,9 +42,15 @@ function solve(A::AbstractMatrix{T},
         for cc = 1:subcount
             i = rpick(rowprob)
             j = rpick(colprob)
-            ## maybe use BLAS?
-            z .-= (dot(col[j],z)/colsum[j]) .* col[j]
-            x .+= ((b[i] - z[i] - dot(row[i],x))/rowsum[i]) .* row[i]
+
+            ## somehow this is faster than combining the
+            ## expressions
+            a = dot(col[j],z)/colsum[j]
+            z .-=  a .* col[j]
+
+            ## ditto
+            a = (b[i] - z[i] - dot(row[i],x)) / rowsum[i]
+            x .+= a .* row[i]
         end
         
         tol2 = epsFnorm2 * sum(abs2,x)
@@ -52,7 +58,7 @@ function solve(A::AbstractMatrix{T},
         # if norm(A*x .- b .+ z) <= tol && norm(A'*z) <= tol
         if ( sum(i->abs2(dot(row[i],x) - b[i] + z[i]), 1:m) <= tol2 &&
              sum(j->abs2(dot(col[j],z)), 1:n) <= tol2 )
-            return x,k*subcount
+            return x,c*subcount
         end
     end
     return x,maxcount*subcount
