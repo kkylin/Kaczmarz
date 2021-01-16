@@ -16,6 +16,8 @@
 
 module BlockToeplitz
 
+export BTMatrix
+
 struct BTMatrix{T} <: AbstractMatrix{T}
     a::AbstractMatrix{T}
     r::Int
