@@ -46,7 +46,7 @@ import Base:conj,getindex,setindex!,size,view
 
 size(A::BTMatrix) = A.M,A.N
 
-function getindex(A::BTMatrix, i::Int, j::Int)
+function getindex(A::BTMatrix{T}, i::Int, j::Int)::T where T
     A.a[i-1-div(j-1,A.n)+A.r, (j-1)%A.n+1]
 end
 
@@ -65,7 +65,7 @@ function view(A::BTMatrix, ::Colon, j::Int)
     BTCol(A, size(A)[1], j)
 end
 
-function getindex(A::BTCol, i::Int)
+function getindex(A::BTCol{T}, i::Int)::T where T
     A.A[i,A.j]
 end
 
@@ -82,7 +82,7 @@ function view(A::BTMatrix, i::Int, ::Colon)
     BTRow(A, size(A)[2], i)
 end
 
-function getindex(A::BTRow, j::Int)
+function getindex(A::BTRow{T}, j::Int)::T where T
     A.A[A.i,j]
 end
 
@@ -92,7 +92,9 @@ struct BTConj{T} <: AbstractVector{T}
 end
 
 size(A::BTConj) = size(A.v)
-getindex(A::BTConj, i::Int) = conj(A.v[i])
+function getindex(A::BTConj{T}, i::Int)::T where T 
+    conj(A.v[i])
+end
 
 conj(v::BTRow) = BTConj(v)
 conj(v::BTCol) = BTConj(v)
