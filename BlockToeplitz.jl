@@ -25,8 +25,6 @@ struct BTMatrix{T} <: AbstractMatrix{T}
     n::Int
     M::Int
     N::Int
-    # row::Vector{T}
-    # col::Vector{T}
 end
 
 BTMatrix(v::AbstractVector, r::Int) = BTMatrix(reshape(v,length(v),1), r)
@@ -36,7 +34,6 @@ function BTMatrix(a::AbstractMatrix{T}, r::Int) where T
     M = m-r+1
     N = r*n
     return BTMatrix(a, r, m, n, M, N)
-    # return BTMatrix(a, r, m, n, M, N, zeros(T,N), zeros(T,M))
 end
 
 ## If we don't mind allocating lots, e.g., view() returns a
@@ -53,9 +50,6 @@ function getindex(A::BTMatrix, i::Int, j::Int)
     A.a[i-1-div(j-1,A.n)+A.r, (j-1)%A.n+1]
 end
 
-function setindex!(A::BTMatrix, i::Int, j::Int, rhs)
-    A.a[i-1-div(j-1,A.n)+A.r, (j-1)%A.n+1] = rhs
-end
 
 
 ## column vectors
