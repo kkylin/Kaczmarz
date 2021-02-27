@@ -1,4 +1,4 @@
-module util
+module Util
 
 import Base.foreach
 
@@ -28,14 +28,6 @@ function foreach(f::Function, range, tag::AbstractString; delay=1.0)
         end
         return time()-t0
     end
-end
-
-function foreach(f::Function, range)
-    t0::Float64 = time()
-    for i in range
-        f(i)
-    end
-    return time()-t0
 end
 
 end#module
