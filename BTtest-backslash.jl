@@ -1,8 +1,10 @@
 using BTtest,LinearAlgebra
 
+test()
+
 include("BTtest-params.jl")
 
-output = BTtest.test(N, n, r; method = :backslash)
+@time output = BTtest.test(N, n, r; method = :backslash)
 
 println("## method: $(output.method)")
 println("## $(output.iters) iterations")
