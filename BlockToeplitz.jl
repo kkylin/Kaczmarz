@@ -153,7 +153,7 @@ end
 
 function axpby!(a::Number, x::BTConj{T}, b::Number, y::AbstractVector{T}) where T <:Union{Complex{Float64}, Float64}
     rowforeach(x) do j,x
-        y[j] = a*x + b*y[j]
+        y[j] = a*conj(x) + b*y[j]
     end
 end
 
