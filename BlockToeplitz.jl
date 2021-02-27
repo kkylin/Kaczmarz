@@ -1,3 +1,4 @@
+######################################################
 ## BlockToeplitz.jl
 
 ## This design still leads to a lot of allocations.  Can be
@@ -98,5 +99,6 @@ end
 
 conj(v::BTRow) = BTConj(v)
 conj(v::BTCol) = BTConj(v)
+
 
 end #module
