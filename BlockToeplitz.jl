@@ -42,6 +42,8 @@ function BTMatrix(a::AbstractMatrix{T}, r::Int) where T
     m,n = size(a)
     M = m-r+1
     N = r*n
+    @assert M>0
+    @assert N>0
     return BTMatrix(a, r, m, n, M, N)
 end
 
@@ -53,14 +55,14 @@ import Base:conj,getindex,setindex!,size,view
 size(A::BTMatrix) = A.M,A.N
 
 function getindex(A::BTMatrix{T}, i::Int, j::Int)::T where T
-    A.a[i-1-div(j-1,A.n)+A.r, (j-1)%A.n+1]
+    A.a[i-1-div(j-1,A.n)+A.r, rem(j-1,A.n)+1]
 end
 
 
 
 ## column vectors
 struct BTCol{T} <: AbstractVector{T}
-    A::BTMatrix{T}
+4    A::BTMatrix{T}
     m::Int
     j::Int
 end
