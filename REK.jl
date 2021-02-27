@@ -46,14 +46,14 @@ function solve(A::AbstractMatrix{T},
         c  = div(loopcount,subcount)
         cc = rem(loopcount,subcount)
 
-        i = rpick(rowprob)
-        j = rpick(colprob)
+        if cc > 0
+            i = rpick(rowprob)
+            j = rpick(colprob)
 
-        z .-= dot(col[j],z)/colsum[j] .* col[j]
-        x .+= (b[i] - z[i] - dot(row[i],x)) / rowsum[i] .* row[i]
-
-        ## don't check too often
-        if cc == 0
+            z .-= dot(col[j],z)/colsum[j] .* col[j]
+            x .+= (b[i] - z[i] - dot(row[i],x)) / rowsum[i] .* row[i]
+        else
+            ## don't check too often
             tol2 = epsFnorm2 * sum(abs2,x)
             
             # if norm(A*x .- b .+ z) <= tol && norm(A'*z) <= tol
