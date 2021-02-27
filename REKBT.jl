@@ -1,7 +1,8 @@
 ######################################################
 ## REKBT.jl
 
-## This integrates REK.jl with BlockToeplitz.
+## This integrates REK.jl with BlockToeplitz.  This version
+## is only slightly faster than the one in REK.jl.
 
 module REKBT
 
