@@ -1,8 +1,10 @@
-using BTtest,LinearAlgebra
+using BTtest,LinearAlgebra,Random
 
 BTtest.test()
 
 include("BTtest-params.jl")
+
+Random.seed!(42)
 
 @time output = BTtest.test(N, n, r; method = :backslash)
 
