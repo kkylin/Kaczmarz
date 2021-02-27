@@ -8,8 +8,8 @@ Random.seed!(42)
 
 @time output = BTtest.test(N, n, r;
                            method = :kaczmarz,
-                           eps=0.05,
-                           maxcount=10,
+                           eps=0.01,  ## 1% rel err
+                           maxcount=100,
                            )
 
 println("## method: $(output.method)")
