@@ -141,6 +141,12 @@ function rowforeach(F!::Function, x::BTRow{T}) where T
     end
 end
 
+function rowforeach(F!::Function, x::BTConj)
+    rowforeach(x.v) do j,a
+        F!(j,conj(a))
+    end
+end
+
 ## This is actually unnecessary, because columns are simpler
 ## than rows, and we can just return a view into the
 ## original matrix.  Nevertheless here it is, for symmetry.
@@ -164,6 +170,12 @@ function colforeach(F!::Function, x::BTCol{T}) where T
     
     for i=1:m
         F!(i,a[i+ishift,jj])
+    end
+end
+
+function colforeach(F!::Function, x::BTConj)
+    colforeach(x.v) do i,a
+        F!(i,conj(a))
     end
 end
 
