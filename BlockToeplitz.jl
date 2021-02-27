@@ -19,6 +19,10 @@
 ## The construct also handles block Toeplitz matrices in a
 ## similar fashion.
 
+
+################################
+## data structures
+
 module BlockToeplitz
 
 export BTMatrix
@@ -41,11 +45,8 @@ function BTMatrix(a::AbstractMatrix{T}, r::Int) where T
     return BTMatrix(a, r, m, n, M, N)
 end
 
-## If we don't mind allocating lots, e.g., view() returns a
-## new vector or matrix every time, then we only need to
-## extend view() for REK.jl to work.  OTOH if we want to be
-## more efficient, then we'll also need to define getindex()
-## and setindex!() for View objects.
+################################
+## define methods necessary for linear solve
 
 import Base:conj,getindex,setindex!,size,view
 
