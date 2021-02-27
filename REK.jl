@@ -64,7 +64,7 @@ function solve(A::AbstractMatrix{T},
             BLAS.axpby!(-dot(col[j],z)/colsum[j], col[j], 0.0, z)
 
             # x .+= (b[i] - z[i] - dot(row[i],x)) / rowsum[i] .* row[i]
-            BLAS.axpby!(b[i] - z[i] - dot(row[i],x) / rowsum[i], row[i],
+            BLAS.axpby!((b[i] - z[i] - dot(row[i],x)) / rowsum[i], row[i],
                         0.0, x)
         else
             ## don't check too often
