@@ -58,8 +58,6 @@ function getindex(A::BTMatrix{T}, i::Int, j::Int)::T where T
     A.a[i-1-div(j-1,A.n)+A.r, rem(j-1,A.n)+1]
 end
 
-
-
 ## column vectors
 struct BTCol{T} <: AbstractVector{T}
     A::BTMatrix{T}
