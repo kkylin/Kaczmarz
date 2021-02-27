@@ -6,7 +6,7 @@ include("BTtest-params.jl")
 
 @time output = BTtest.test(N, n, r;
                            method = :kaczmarz,
-                           eps=1e-3,
+                           eps=0.05,
                            maxcount=10,
                            )
 
