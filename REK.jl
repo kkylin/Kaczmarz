@@ -7,7 +7,7 @@
 
 module REK
 
-using LinearAlgebra
+using LinearAlgebra,Util
 
 export solve
 
@@ -40,7 +40,7 @@ function solve(A::AbstractMatrix{T},
     iabs2(i) = abs2(dot(row[i],x) - b[i] + z[i])
     jabs2(j) = abs2(dot(col[j],z))
 
-    for c = 1:maxcount
+    foreach(1:maxcount, "REK") do c
         for cc = 1:subcount
             i = rpick(rowprob)
             j = rpick(colprob)
