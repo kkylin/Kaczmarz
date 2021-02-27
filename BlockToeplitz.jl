@@ -19,6 +19,12 @@
 ## The construct also handles block Toeplitz matrices in a
 ## similar fashion.
 
+## Note: using this with REK.jl is pretty slow, but seems to
+## work correctly.  I'm guessing the speed bottleneck is
+## dot(); a custom version that avoids repeated calls to
+## getindex() (which uses very slow modular arithmetic)
+## may be faster.
+
 
 ################################
 ## data structures
