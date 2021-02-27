@@ -13,15 +13,22 @@ function test(::Type{Float64},m=100,n=3,r=5; method = :backslash, flags...)
 
     x     = Float64[]
     iters = 0
+    norm2 = row_resid2 = col_resid2 = 0.
     
     if method === :backslash
         x = A\b
     elseif method === :kaczmarz
-        x,iters = solve(A,b; flags...)
+        x,iters,norm2,row_resid2,col_resid2 = solve(A,b; flags...)
     else
         error("unknown method $method")
     end
-    return (sol = x, iters = iters, method = method)
+    return (sol = x,
+            iters = iters,
+            method = method,
+            norm2 = norm2,
+            row_resid2 = row_resid2,
+            col_resid2 = col_resid2,
+            )
 end
 
 function test(::Type{Complex128},m=100,n=3,r=5; method = :backslash, flags...)
@@ -31,15 +38,22 @@ function test(::Type{Complex128},m=100,n=3,r=5; method = :backslash, flags...)
 
     x     = Complex128[]
     iters = 0
+    norm2 = row_resid2 = col_resid2 = 0.
     
     if method === :backslash
         x = A\b
     elseif method === :kaczmarz
-        x,iters = solve(A,b; flags...)
+        x,iters,norm2,row_resid2,col_resid2 = solve(A,b; flags...)
     else
         error("unknown method $method")
     end
-    return (sol = x, iters = iters, method = method)
+    return (sol = x,
+            iters = iters,
+            method = method,
+            norm2 = norm2,
+            row_resid2 = row_resid2,
+            col_resid2 = col_resid2,
+            )
 end
 
 end#module
