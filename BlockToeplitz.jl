@@ -34,6 +34,8 @@
 
 module BlockToeplitz
 
+using LinearAlgebra
+
 export BTMatrix
 
 struct BTMatrix{T} <: AbstractMatrix{T}
@@ -60,6 +62,7 @@ end
 ## define methods necessary for linear solve
 
 import Base:conj,getindex,setindex!,size,view
+import 
 
 size(A::BTMatrix) = A.M,A.N
 
@@ -114,5 +117,42 @@ end
 conj(v::BTRow) = BTConj(v)
 conj(v::BTCol) = BTConj(v)
 
+## custom dot product
+import LinearAlgebra:dot
+
+function dot(x::BTRow{T}, y::AbstractVector{T}) where T
+    i = x.i
+    n = x.n
+    r = x.A.r
+    a = x.A.a
+
+    sum = zero(T)
+    
+    for j=1:div(n,r)
+        for jj=1:n
+            sum += conj(a[i-j+r,jj]) * y[(j-1)*n+jj]
+        end
+    end
+    return sum
+end
+
+## This is actually unnecessary, because columns are simpler
+## than rows, and we can just return a view into the
+## original matrix.  Nevertheless here it is, for symmetry.
+function dot(x::BTCol{T}, y::AbstractVector{T}) where T
+    j = x.j
+    m = x.m
+    n = x.A.n
+    r = x.A.r
+    a = x.A.a
+
+    sum = zero(T)
+    jj = rem(j-1,n)+1
+    
+    for i=r-div(j-1,n):m-r+1
+        sum += conj(a[i-j+r,jj]) * y[i]
+    end
+    return sum
+end
 
 end #module
