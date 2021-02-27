@@ -1,9 +1,13 @@
 ######################################################
 ## REK.jl
 
+## This file implements the algorithm proposed in
+
 ## A Zouzias and NM Freris, "Randomized extended Kaczmarz
 ## for solving least squares," SIAM J Matrix Anal Appl 34
 ## (2013), doi:10.1137/120889897
+
+## It has been extended slightly to handle complex vectors.
 
 module REK
 
