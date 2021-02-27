@@ -1,6 +1,6 @@
 using BTtest,LinearAlgebra
 
-test()
+BTtest.test()
 
 include("BTtest-params.jl")
 
