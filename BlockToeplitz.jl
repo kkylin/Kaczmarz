@@ -118,27 +118,41 @@ conj(v::BTCol) = BTConj(v)
 
 ## custom dot product
 import LinearAlgebra:dot
+export rowforeach,colforeach
 
 function dot(x::BTRow{T}, y::AbstractVector{T}) where T
+    sum = zero(T)
+    rowforeach(x) do j,a
+        sum += conj(a) * y[j]
+    end
+    return sum
+end
+
+function rowforeach(F!::Function, x::BTRow{T}) where T
     i = x.i
     n = x.A.n
     r = x.A.r
     a = x.A.a
 
-    sum = zero(T)
-    
     for k=1:r
         for j=1:n
-            sum += conj(a[i-k+r,j]) * y[(k-1)*n+j]
+            F!((k-1)*n+j,a[i-k+r,j])
         end
     end
-    return sum
 end
 
 ## This is actually unnecessary, because columns are simpler
 ## than rows, and we can just return a view into the
 ## original matrix.  Nevertheless here it is, for symmetry.
 function dot(x::BTCol{T}, y::AbstractVector{T}) where T
+    sum = zero(T)
+    colforeach(x) do i,a
+        sum += conj(a) * y[i]
+    end
+    return sum
+end
+
+function colforeach(F!::Function, x::BTCol{T}) where T
     j = x.j
     m = x.m
     n = x.A.n
@@ -147,12 +161,10 @@ function dot(x::BTCol{T}, y::AbstractVector{T}) where T
 
     jj     = rem(j-1,n)+1
     ishift = -1-div(j-1,n)+r
-    sum    = zero(T)
     
     for i=1:m
-        sum += conj(a[i+ishift,jj]) * y[i]
+        F!(i,a[i+ishift,jj])
     end
-    return sum
 end
 
 end #module
