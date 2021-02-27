@@ -6,7 +6,7 @@ Complex128 = Complex{Float64}
 
 test(m=100,n=3,r=5; flags...) = test(Complex128,m,n,r; flags...)
 
-function test(::Type{Float64},m=3,n=3,r=5; method = :backslash, flags...)
+function test(::Type{Float64},m=100,n=3,r=5; method = :backslash, flags...)
     A = randn(m,n)
     b = randn(m-r+1)
     A = BTMatrix(A,r)
@@ -24,7 +24,7 @@ function test(::Type{Float64},m=3,n=3,r=5; method = :backslash, flags...)
     return (sol = x, iters = iters, method = method)
 end
 
-function test(::Type{Complex128},m=100,n=3,r=5; flags...)
+function test(::Type{Complex128},m=100,n=3,r=5; method = :backslash, flags...)
     A = randn(m,n) + im*randn(m,n)
     b = randn(m-r+1) + im*randn(m-r+1)
     A = BTMatrix(A,r)
