@@ -41,7 +41,9 @@ function solve(A::AbstractMatrix{T},
     epsFnorm2 = eps^2 * Asum
     subcount = 8*min(m,n)
 
-    @show (m,n,subcount)
+    if verbose
+        @show (m,n,subcount,Asum)
+    end
 
     ## main loop
     z = copy(b)  ## we'll be modifying z and b shouldn't change
