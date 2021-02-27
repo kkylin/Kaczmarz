@@ -85,15 +85,22 @@ function solve(A::AbstractMatrix{T},
             
             if ( row_resid2 <= epsFnorm2*norm2 &&
                  col_resid2 <= epsFnorm2*norm2 )
-                return x,loopcount,norm2,row_resid2,col_resid2
+                if verbose
+                    println("#REK: early exit")
+                end
+                throw((x,loopcount,norm2,row_resid2,col_resid2))
             end
         end
     end
 
-    if verbose
-        foreach(oneloop, 1:(maxcount*subcount), "REK"; delay=delay)
-    else
-        foreach(oneloop, 1:(maxcount*subcount))
+    try
+        if verbose
+            foreach(oneloop, 1:(maxcount*subcount), "REK"; delay=delay)
+        else
+            foreach(oneloop, 1:(maxcount*subcount))
+        end
+    catch output
+        return output
     end
     return x,maxcount*subcount,norm2,row_resid2,col_resid2
 end
