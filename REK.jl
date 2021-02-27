@@ -13,7 +13,7 @@ export solve
 
 function solve(A::AbstractMatrix{T},
                b::AbstractVector{T};
-               eps      = 1e-6,
+               eps      = 1e-6,  ## relative error tolerance
                maxcount = 1000,
                delay    = 10,  ## report freq, in sec
                ) where T <: Number
@@ -44,6 +44,9 @@ function solve(A::AbstractMatrix{T},
 
     norm2 = row_resid2 = col_resid2 = 0.
 
+    ## In the paper, the algorithm is formulated as a pair
+    ## of nested loops.  Here I have unrolled the loops so
+    ## that ETA is calculated correctly.
     foreach(1:(maxcount*subcount), "REK"; delay=delay) do loopcount
         c  = div(loopcount,subcount)
         cc = rem(loopcount,subcount)
