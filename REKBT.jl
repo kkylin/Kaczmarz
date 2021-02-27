@@ -51,13 +51,13 @@ function solve(A::AbstractMatrix{T},
 
         if cc > 0
             let j = rpick(colprob),
-                c=dot(col[j],z)/colsum[j]
+                c = dot(col[j],z)/colsum[j]
                 colforeach(col[j]) do i,a
                     z[i] -= a*c
                 end
             end
             let i = rpick(rowprob),
-                c=(b[i] - z[i] - dot(row[i],x)) / rowsum[i]
+                c = (b[i] - z[i] - dot(row[i],x)) / rowsum[i]
                 rowforeach(row[i]) do j,a
                     x[j] += a*c
                 end
