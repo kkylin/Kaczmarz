@@ -118,7 +118,7 @@ conj(v::BTCol) = BTConj(v)
 
 ## custom dot product
 import Base:sum
-import LinearAlgebra:dot
+import LinearAlgebra:dot,BLAS.axpby!
 export rowforeach,colforeach
 
 function dot(x::BTRow{T}, y::AbstractVector{T}) where T
@@ -143,6 +143,18 @@ function sum(f::Function, x::BTRow{T}) where T
         sum += f(a)
     end
     return sum
+end
+
+function axpby!(a::Number, x::BTRow, b::Number, y::AbstractVector)
+    rowforeach(x) do j,x
+        y[j] = a*x + b*y[j]
+    end
+end
+
+function axpby!(a::Number, x::BTConj, b::Number, y::AbstractVector)
+    rowforeach(x) do j,x
+        y[j] = a*x + b*y[j]
+    end
 end
 
 function rowforeach(F!::Function, x::BTRow{T}) where T
@@ -181,6 +193,12 @@ function sum(f::Function, x::BTCol{T}) where T
         sum += f(a)
     end
     return sum
+end
+
+function axpby!(a::Number, x::BTCol, b::Number, y::AbstractVector)
+    colforeach(x) do i,x
+        y[i] = a*x + b*y[i]
+    end
 end
 
 function colforeach(F!::Function, x::BTCol{T}) where T
