@@ -19,17 +19,6 @@
 ## The construct also handles block Toeplitz matrices in a
 ## similar fashion.
 
-#=
-
-1) view() can return a lightweight object instead of
-   allocating a matrix; and
-
-2) for Kaczmarz, define a lightweight conj() object.
-
-2) Or, rewrite Kaczmarz code to avoid view() altogether.
-
-=#
-
 module BlockToeplitz
 
 export BTMatrix
