@@ -62,7 +62,7 @@ end
 
 ## column vectors
 struct BTCol{T} <: AbstractVector{T}
-4    A::BTMatrix{T}
+    A::BTMatrix{T}
     m::Int
     j::Int
 end
