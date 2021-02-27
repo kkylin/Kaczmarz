@@ -35,17 +35,17 @@ function nicedate(sec::Float64)
         sec = chop(sec)
         return "$sec sec"
     else
-        min = int_floor(floor(sec / 60))
+        min = floor(Int,sec / 60)
         sec = chop( sec - 60*min )
         if min < 60
             return "$min min $sec sec"
         else
-            hrs = int_floor(floor(min / 60))
+            hrs = floor(Int,min / 60)
             min -= 60*hrs
             if hrs < 24
                 return "$hrs hrs $min min $sec sec"
             else
-                days = int_floor(floor(hrs / 24))
+                days = floor(Int,hrs / 24)
                 hrs -= 24*days
                 return "$days days $hrs hrs $min min $sec sec"
             end
