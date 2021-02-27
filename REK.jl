@@ -28,15 +28,16 @@ function solve(A::AbstractMatrix{T},
     ## corresponding probabilities
     row     = map(i->conj(view(A,i,:)), 1:m)
     rowsum  = map(r->sum(abs2,r), row)
-    rowprob = rowsum ./ sum(rowsum)
+    Asum    = sum(rowsum)
+    rowprob = rowsum ./ Asum
 
     ## same for cols
     col     = map(j->view(A,:,j), 1:n)
     colsum  = map(c->sum(abs2,c), col)
-    colprob = colsum ./ sum(colsum)
-
+    colprob = colsum ./ Asum
+    
     ## these are needed for the convergence test
-    epsFnorm2 = eps^2 * sum(abs2,A)
+    epsFnorm2 = eps^2 * Asum
     subcount = 8*min(m,n)
 
     ## main loop
