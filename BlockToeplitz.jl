@@ -62,7 +62,6 @@ end
 ## define methods necessary for linear solve
 
 import Base:conj,getindex,setindex!,size,view
-import 
 
 size(A::BTMatrix) = A.M,A.N
 
@@ -122,15 +121,15 @@ import LinearAlgebra:dot
 
 function dot(x::BTRow{T}, y::AbstractVector{T}) where T
     i = x.i
-    n = x.n
+    n = x.A.n
     r = x.A.r
     a = x.A.a
 
     sum = zero(T)
     
-    for j=1:div(n,r)
-        for jj=1:n
-            sum += conj(a[i-j+r,jj]) * y[(j-1)*n+jj]
+    for k=1:r
+        for j=1:n
+            sum += conj(a[i-k+r,j]) * y[(k-1)*n+j]
         end
     end
     return sum
@@ -146,11 +145,12 @@ function dot(x::BTCol{T}, y::AbstractVector{T}) where T
     r = x.A.r
     a = x.A.a
 
-    sum = zero(T)
-    jj = rem(j-1,n)+1
+    jj     = rem(j-1,n)+1
+    ishift = -1-div(j-1,n)+r
+    sum    = zero(T)
     
-    for i=r-div(j-1,n):m-r+1
-        sum += conj(a[i-j+r,jj]) * y[i]
+    for i=1:m
+        sum += conj(a[i+ishift,jj]) * y[i]
     end
     return sum
 end
