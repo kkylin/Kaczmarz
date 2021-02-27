@@ -1,31 +1,45 @@
 module BTtest
 
-using REK,BlockToeplitz,LinearAlgebra
+using REK,BlockToeplitz
 
-test(m=100,n=3,r=5; flags...) = test(Complex{Float64},m,n,r; flags...)
+Complex128 = Complex{Float64}
 
-function test(::Type{Float64},m=3,n=3,r=5; flags...)
+test(m=100,n=3,r=5; flags...) = test(Complex128,m,n,r; flags...)
+
+function test(::Type{Float64},m=3,n=3,r=5; method = :backslash, flags...)
     A = randn(m,n)
     b = randn(m-r+1)
     A = BTMatrix(A,r)
-    @time x0 = A\b
-    @time x1,k = solve(A,b; flags...)
-    (backslash = x0, kaczmarz = x1, itercount = k) 
+
+    x     = Float64[]
+    iters = 0
+    
+    if method === :backslash
+        x = A\b
+    elseif method === :kaczmarz
+        x,iters = solve(A,b; flags...)
+    else
+        error("unknown method $method")
+    end
+    return (sol = x, iters = iters, method = method)
 end
 
-function test(::Type{Complex{Float64}},m=100,n=3,r=5; flags...)
+function test(::Type{Complex128},m=100,n=3,r=5; flags...)
     A = randn(m,n) + im*randn(m,n)
     b = randn(m-r+1) + im*randn(m-r+1)
     A = BTMatrix(A,r)
-    @time backslash = A\b
-    @time kaczmarz,count = solve(A,b; flags...)
-    print("## ")
-    @show maximum(abs,backslash-kaczmarz)
-    print("## ")
-    @show norm(backslash)
-    print("## ")
-    @show norm(kaczmarz)
-    (backslash = backslash, kaczmarz = kaczmarz, count = count) 
+
+    x     = Complex128[]
+    iters = 0
+    
+    if method === :backslash
+        x = A\b
+    elseif method === :kaczmarz
+        x,iters = solve(A,b; flags...)
+    else
+        error("unknown method $method")
+    end
+    return (sol = x, iters = iters, method = method)
 end
 
 end#module
