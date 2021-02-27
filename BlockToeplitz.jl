@@ -117,6 +117,7 @@ conj(v::BTRow) = BTConj(v)
 conj(v::BTCol) = BTConj(v)
 
 ## custom dot product
+import Base:sum
 import LinearAlgebra:dot
 export rowforeach,colforeach
 
@@ -124,6 +125,14 @@ function dot(x::BTRow{T}, y::AbstractVector{T}) where T
     sum = zero(T)
     rowforeach(x) do j,a
         sum += conj(a) * y[j]
+    end
+    return sum
+end
+
+function sum(f::Function, x::BTRow{T}) where T
+    sum = 0
+    rowforeach(x) do j,a
+        sum += f(a)
     end
     return sum
 end
@@ -154,6 +163,14 @@ function dot(x::BTCol{T}, y::AbstractVector{T}) where T
     sum = zero(T)
     colforeach(x) do i,a
         sum += conj(a) * y[i]
+    end
+    return sum
+end
+
+function sum(f::Function, x::BTCol{T}) where T
+    sum = 0
+    colforeach(x) do i,a
+        sum += f(a)
     end
     return sum
 end
