@@ -42,6 +42,8 @@ function solve(A::AbstractMatrix{T},
     iabs2(i) = abs2(dot(row[i],x) - b[i] + z[i])
     jabs2(j) = abs2(dot(col[j],z))
 
+    norm2 = row_resid2 = col_resid2 = 0.
+
     foreach(1:(maxcount*subcount), "REK"; delay=delay) do loopcount
         c  = div(loopcount,subcount)
         cc = rem(loopcount,subcount)
@@ -54,15 +56,17 @@ function solve(A::AbstractMatrix{T},
             x .+= (b[i] - z[i] - dot(row[i],x)) / rowsum[i] .* row[i]
         else
             ## don't check too often
-            tol2 = epsFnorm2 * sum(abs2,x)
+            norm2 = sum(abs2,x)
+            row_resid2 = sum(iabs2,1:m)
+            col_resid2 = sum(jabs2,1:n)
             
-            # if norm(A*x .- b .+ z) <= tol && norm(A'*z) <= tol
-            if ( sum(iabs2,1:m) <= tol2 && sum(jabs2,1:n) <= tol2 )
-                return x,c*subcount
+            if ( row_resid2 <= epsFnorm2*norm2 &&
+                 col_resid2 <= epsFnorm2*norm2 )
+                return x,loopcount,norm2,row_resid2,col_resid2
             end
         end
     end
-    return x,maxcount*subcount
+    return x,maxcount*subcount,norm2,row_resid2,col_resid2
 end
 
 function rpick(probs)
