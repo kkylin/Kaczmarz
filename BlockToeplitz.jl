@@ -129,6 +129,14 @@ function dot(x::BTRow{T}, y::AbstractVector{T}) where T
     return sum
 end
 
+function dot(x::BTConj{T}, y::AbstractVector{T}) where T
+    sum = zero(T)
+    rowforeach(x) do j,a
+        sum += a * y[j]
+    end
+    return sum
+end
+
 function sum(f::Function, x::BTRow{T}) where T
     sum = 0
     rowforeach(x) do j,a
