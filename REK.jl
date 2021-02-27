@@ -13,8 +13,10 @@ export solve
 
 function solve(A::AbstractMatrix{T},
                b::AbstractVector{T};
-               eps = 1e-6,
-               maxcount=1000) where T <: Number
+               eps      = 1e-6,
+               maxcount = 1000,
+               delay    = 10,  ## report freq, in sec
+               ) where T <: Number
 
     m,n = size(A)
 
@@ -40,20 +42,24 @@ function solve(A::AbstractMatrix{T},
     iabs2(i) = abs2(dot(row[i],x) - b[i] + z[i])
     jabs2(j) = abs2(dot(col[j],z))
 
-    foreach(1:maxcount, "REK") do c
-        for cc = 1:subcount
-            i = rpick(rowprob)
-            j = rpick(colprob)
+    foreach(1:(maxcount*subcount), "REK"; delay=delay) do loopcount
+        c  = div(loopcount,subcount)
+        cc = rem(loopcount,subcount)
 
-            z .-= dot(col[j],z)/colsum[j] .* col[j]
-            x .+= (b[i] - z[i] - dot(row[i],x)) / rowsum[i] .* row[i]
-        end
-        
-        tol2 = epsFnorm2 * sum(abs2,x)
+        i = rpick(rowprob)
+        j = rpick(colprob)
 
-        # if norm(A*x .- b .+ z) <= tol && norm(A'*z) <= tol
-        if ( sum(iabs2,1:m) <= tol2 && sum(jabs2,1:n) <= tol2 )
-            return x,c*subcount
+        z .-= dot(col[j],z)/colsum[j] .* col[j]
+        x .+= (b[i] - z[i] - dot(row[i],x)) / rowsum[i] .* row[i]
+
+        ## don't check too often
+        if cc == 0
+            tol2 = epsFnorm2 * sum(abs2,x)
+            
+            # if norm(A*x .- b .+ z) <= tol && norm(A'*z) <= tol
+            if ( sum(iabs2,1:m) <= tol2 && sum(jabs2,1:n) <= tol2 )
+                return x,c*subcount
+            end
         end
     end
     return x,maxcount*subcount
