@@ -145,13 +145,13 @@ function sum(f::Function, x::BTRow{T}) where T
     return sum
 end
 
-function axpby!(a::Number, x::BTRow, b::Number, y::AbstractVector)
+function axpby!(a::Number, x::BTRow{T}, b::Number, y::AbstractVector{T}) where T <:Union{Complex{Float64}, Float64}
     rowforeach(x) do j,x
         y[j] = a*x + b*y[j]
     end
 end
 
-function axpby!(a::Number, x::BTConj, b::Number, y::AbstractVector)
+function axpby!(a::Number, x::BTConj{T}, b::Number, y::AbstractVector{T}) where T <:Union{Complex{Float64}, Float64}
     rowforeach(x) do j,x
         y[j] = a*x + b*y[j]
     end
@@ -195,7 +195,7 @@ function sum(f::Function, x::BTCol{T}) where T
     return sum
 end
 
-function axpby!(a::Number, x::BTCol, b::Number, y::AbstractVector)
+function axpby!(a::Number, x::BTCol{T}, b::Number, y::AbstractVector{T}) where T <:Union{Complex{Float64}, Float64}
     colforeach(x) do i,x
         y[i] = a*x + b*y[i]
     end
