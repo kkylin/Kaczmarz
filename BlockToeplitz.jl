@@ -1,8 +1,23 @@
 ######################################################
 ## BlockToeplitz.jl
 
-## This design still leads to a lot of allocations.  Can be
-## more efficient still:
+## Given an m-vector A, this provides a representation of
+## the size-(m,r) Toeplitz matrix of the form
+
+## A[r]   A[r-1] ⋯  A[2]    A[1]
+## A[r+1] A[r]   ⋯  A[3]    A[2]
+## A[r+2] A[r+1] ⋯  A[4]    A[3]
+##   ⋮      ⋮     ⋱    ⋮        ⋮
+## A[m]   A[m-1] ⋯ A[m-r+2] A[m-r+1]
+
+## The goal is to enable solving least squares problems of
+## the form A*x = b for given n-vectors b, with n=m-r+1.  If
+## A is a stationary time series, then
+## A[k]*x[1]+A[k-1]*x[2]+⋯+A[k-r+1]*x[r] is the optimal
+## linear estimate of b[k] using A[k],A[k-1],⋯,A[k-r+1].
+
+## The construct also handles block Toeplitz matrices in a
+## similar fashion.
 
 #=
 
