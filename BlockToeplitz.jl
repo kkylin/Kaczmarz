@@ -131,7 +131,7 @@ end
 
 function dot(x::BTConj{T}, y::AbstractVector{T}) where T
     sum = zero(T)
-    rowforeach(x) do j,a
+    rowforeach(x.v) do j,a
         sum += a * y[j]
     end
     return sum
@@ -152,7 +152,7 @@ function axpby!(a::Number, x::BTRow{T}, b::Number, y::AbstractVector{T}) where T
 end
 
 function axpby!(a::Number, x::BTConj{T}, b::Number, y::AbstractVector{T}) where T <:Union{Complex{Float64}, Float64}
-    rowforeach(x) do j,x
+    rowforeach(x.v) do j,x
         y[j] = a*conj(x) + b*y[j]
     end
 end
