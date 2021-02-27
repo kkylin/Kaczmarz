@@ -1,10 +1,9 @@
+######################################################
 ## REK.jl
 
 ## A Zouzias and NM Freris, "Randomized extended Kaczmarz
 ## for solving least squares," SIAM J Matrix Anal Appl 34
 ## (2013), doi:10.1137/120889897
-
-## This design is perhaps too rigid.
 
 module REK
 
@@ -72,8 +71,8 @@ function rpick(probs)
     return length(probs)
 end
 
-
-## tests
+################################
+## some simple tests
 
 test(m=3,n=3; flags...) = test(Complex{Float64},m,n; flags...)
 
