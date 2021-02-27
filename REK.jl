@@ -20,6 +20,7 @@ function solve(A::AbstractMatrix{T},
                eps      = 1e-6,  ## relative error tolerance
                maxcount = 1000,
                delay    = 10,  ## report freq, in sec
+               verbose  = true,
                ) where T <: Number
 
     m,n = size(A)
@@ -40,6 +41,8 @@ function solve(A::AbstractMatrix{T},
     epsFnorm2 = eps^2 * Asum
     subcount = 8*min(m,n)
 
+    @show (m,n,subcount)
+
     ## main loop
     z = copy(b)  ## we'll be modifying z and b shouldn't change
     x = zeros(T,n)
@@ -52,7 +55,7 @@ function solve(A::AbstractMatrix{T},
     ## In the paper, the algorithm is formulated as a pair
     ## of nested loops.  Here I have unrolled the loops so
     ## that ETA is calculated correctly.
-    foreach(1:(maxcount*subcount), "REK"; delay=delay) do loopcount
+    function oneloop(loopcount)
         c  = div(loopcount,subcount)
         cc = rem(loopcount,subcount)
 
@@ -71,12 +74,24 @@ function solve(A::AbstractMatrix{T},
             norm2 = sum(abs2,x)
             row_resid2 = sum(iabs2,1:m)
             col_resid2 = sum(jabs2,1:n)
+
+            if verbose
+                @show norm2
+                @show row_resid2
+                @show col_resid2
+            end
             
             if ( row_resid2 <= epsFnorm2*norm2 &&
                  col_resid2 <= epsFnorm2*norm2 )
                 return x,loopcount,norm2,row_resid2,col_resid2
             end
         end
+    end
+
+    if verbose
+        foreach(oneloop, 1:(maxcount*subcount), "REK"; delay=delay)
+    else
+        foreach(oneloop, 1:(maxcount*subcount))
     end
     return x,maxcount*subcount,norm2,row_resid2,col_resid2
 end
