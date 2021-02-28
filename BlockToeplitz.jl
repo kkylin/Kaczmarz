@@ -29,7 +29,7 @@
 
 module BlockToeplitz
 
-using LinearAlgebra
+using LinearAlgebra,Base.Threads
 
 export BTMatrix
 
@@ -158,7 +158,7 @@ function rowforeach(F!::Function, x::BTRow{T}) where T
     r = x.A.r
     a = x.A.a
 
-    for k=1:r
+    @threads for k=1:r
         for j=1:n
             F!((k-1)*n+j,a[i-k+r,j])
         end
@@ -196,6 +196,12 @@ function axpby!(a::Number, x::BTCol{T}, b::Number, y::AbstractVector{T}) where T
     end
 end
 
+function colforeach(F!::Function, x::BTConj)
+    colforeach(x.v) do i,a
+        F!(i,conj(a))
+    end
+end
+
 function colforeach(F!::Function, x::BTCol{T}) where T
     j = x.j
     m = x.m
@@ -205,15 +211,9 @@ function colforeach(F!::Function, x::BTCol{T}) where T
 
     jj     = rem(j-1,n)+1
     ishift = -1-div(j-1,n)+r
-    
-    for i=1:m
-        F!(i,a[i+ishift,jj])
-    end
-end
 
-function colforeach(F!::Function, x::BTConj)
-    colforeach(x.v) do i,a
-        F!(i,conj(a))
+    @threads for i=1:m
+        F!(i,a[i+ishift,jj])
     end
 end
 
