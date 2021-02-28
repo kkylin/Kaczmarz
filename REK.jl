@@ -39,8 +39,10 @@ function solve(A::AbstractMatrix{T},
     
     ## these are needed for the convergence test
     epsFnorm2 = eps^2 * Asum
-    # subcount = 8*min(m,n)  ## the paper suggests this
-    subcount = min(m,n)      ## but let's check more often
+
+    ## the paper suggests this (presumably) because the
+    ## error check is actually pretty expensive
+    subcount = 8*min(m,n)  
 
     if verbose
         @show (m,n,subcount,Asum)
