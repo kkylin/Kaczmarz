@@ -29,15 +29,15 @@ function solve(A::AbstractMatrix{T},
     ## corresponding probabilities
     row     = map(i->conj(view(A,i,:)), 1:m)
     rowsum  = map(r->sum(abs2,r), row)
-    Asum    = sum(rowsum)
-    rowprob = rowsum ./ Asum
+    rowprob = rowsum ./ sum(rowsum)
 
     ## same for cols
     col     = map(j->view(A,:,j), 1:n)
     colsum  = map(c->sum(abs2,c), col)
-    colprob = colsum ./ Asum
+    colprob = colsum ./ sum(colsum)
     
     ## these are needed for the convergence test
+    Asum      = sum(rowsum)
     epsFnorm2 = eps^2 * Asum
 
     ## the paper suggests this (presumably) because the
@@ -97,6 +97,8 @@ function solve(A::AbstractMatrix{T},
         end
     end
 
+    ## Not the best way to implement a nonlocal exit, but
+    ## good enough for now.
     try
         if verbose
             foreach(oneloop, 1:(maxcount*subcount), "REK"; delay=delay)
