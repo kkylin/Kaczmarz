@@ -7,9 +7,12 @@ Complex128 = Complex{Float64}
 test(m=100,n=3,r=5; flags...) = test(Complex128,m,n,r; flags...)
 
 function test(::Type{Float64},m=100,n=3,r=5; method = :backslash, flags...)
-    A = randn(m,n)
-    b = randn(m-r+1)
-    A = BTMatrix(A,r)
+
+    X = randn(m,n)
+    c = rand(n*r)
+
+    A = BTMatrix(X,r)
+    b = A*c
 
     x     = Float64[]
     iters = 0
@@ -23,6 +26,9 @@ function test(::Type{Float64},m=100,n=3,r=5; method = :backslash, flags...)
         error("unknown method $method")
     end
     return (sol = x,
+            truth = c,
+            A = A,
+            b = b,
             iters = iters,
             method = method,
             norm2 = norm2,
@@ -32,9 +38,12 @@ function test(::Type{Float64},m=100,n=3,r=5; method = :backslash, flags...)
 end
 
 function test(::Type{Complex128},m=100,n=3,r=5; method = :backslash, flags...)
-    A = randn(m,n) + im*randn(m,n)
-    b = randn(m-r+1) + im*randn(m-r+1)
-    A = BTMatrix(A,r)
+
+    X = randn(m,n) + im*randn(m,n)
+    c = rand(n*r) + im*rand(n*r)
+
+    A = BTMatrix(X,r)
+    b = A*c
 
     x     = Complex128[]
     iters = 0
@@ -48,6 +57,9 @@ function test(::Type{Complex128},m=100,n=3,r=5; method = :backslash, flags...)
         error("unknown method $method")
     end
     return (sol = x,
+            truth = c,
+            A = A,
+            b = b,
             iters = iters,
             method = method,
             norm2 = norm2,
