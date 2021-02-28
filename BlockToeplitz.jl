@@ -19,14 +19,9 @@
 ## The construct also handles block Toeplitz matrices in a
 ## similar fashion.
 
-## Note: using this with REK.jl is pretty slow, but seems to
-## work correctly.  From inspecting the code (unconfirmed by
-## profiling), there are two potential bottlenecks, dot
-## products and scalar-vector multiplication involving
-## columns and rows of block Toeplitz matrices.  Custom
-## versions of these operations that avoid repeated calls to
-## getindex() (which does some modular arithmetic on every
-## call) may be faster.
+## This code is neither minimal (it implements more than is
+## needed for REK) nor complete (it does not implement all
+## matrix operations).  But should be good enough for now.
 
 
 ################################
