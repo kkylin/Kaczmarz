@@ -77,15 +77,16 @@ function solve(A::AbstractMatrix{T},
             norm2 = sum(abs2,x)
             row_resid2 = sum(iabs2,1:m)
             col_resid2 = sum(jabs2,1:n)
+            threshold  = epsFnorm2*norm2
 
             if verbose
                 @show norm2
                 @show row_resid2
                 @show col_resid2
+                @show threshold
             end
             
-            if ( row_resid2 <= epsFnorm2*norm2 &&
-                 col_resid2 <= epsFnorm2*norm2 )
+            if ( row_resid2 <= threshold && col_resid2 <= threshold )
                 if verbose
                     println("#REK: early exit")
                 end
