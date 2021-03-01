@@ -17,6 +17,8 @@ function test(::Type{Float64},m=100,n=3,r=5; method = :backslash, flags...)
     x     = Float64[]
     iters = 0
     norm2 = row_resid2 = col_resid2 = 0.
+
+    tstart = time()
     
     if method === :backslash
         x = A\b
@@ -34,6 +36,7 @@ function test(::Type{Float64},m=100,n=3,r=5; method = :backslash, flags...)
             norm2 = norm2,
             row_resid2 = row_resid2,
             col_resid2 = col_resid2,
+            runtime = time()-tsart,
             )
 end
 
@@ -49,6 +52,8 @@ function test(::Type{Complex128},m=100,n=3,r=5; method = :backslash, flags...)
     iters = 0
     norm2 = row_resid2 = col_resid2 = 0.
     
+    tstart = time()
+    
     if method === :backslash
         x = A\b
     elseif method === :kaczmarz
@@ -65,6 +70,7 @@ function test(::Type{Complex128},m=100,n=3,r=5; method = :backslash, flags...)
             norm2 = norm2,
             row_resid2 = row_resid2,
             col_resid2 = col_resid2,
+            runtime = time()-tsart,
             )
 end
 
