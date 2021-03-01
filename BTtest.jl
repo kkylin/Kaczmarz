@@ -36,7 +36,7 @@ function test(::Type{Float64},m=100,n=3,r=5; method = :backslash, flags...)
             norm2 = norm2,
             row_resid2 = row_resid2,
             col_resid2 = col_resid2,
-            runtime = time()-tsart,
+            runtime = time()-tstart,
             )
 end
 
@@ -70,7 +70,7 @@ function test(::Type{Complex128},m=100,n=3,r=5; method = :backslash, flags...)
             norm2 = norm2,
             row_resid2 = row_resid2,
             col_resid2 = col_resid2,
-            runtime = time()-tsart,
+            runtime = time()-tstart,
             )
 end
 
