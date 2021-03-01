@@ -174,6 +174,11 @@ end
 ## This is actually unnecessary, because columns are simpler
 ## than rows, and we can just return a view into the
 ## original matrix.  Nevertheless here it is, for symmetry.
+
+## Note on parallelizing: the use of a shared variable as
+## accumulator means this is not parallelized so easily.
+## Maybe returning a view is the more performant thing to
+## do.
 function dot(x::BTCol{T}, y::AbstractVector{T}) where T
     sum = zero(T)
     colforeach(x) do i,a
