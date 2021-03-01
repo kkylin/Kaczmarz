@@ -64,21 +64,20 @@ function getindex(A::BTMatrix{T}, i::Int, j::Int)::T where T
     A.a[i-1-div(j-1,A.n)+A.r, rem(j-1,A.n)+1]
 end
 
-## column vectors
-struct BTCol{T} <: AbstractVector{T}
-    A::BTMatrix{T}
-    m::Int
-    j::Int
-end
-
-size(A::BTCol) = (A.m,)
+## column vectors do not need a separate struct, because
+## they correspond to contiguous subarrays in the original
+## matrix
 
 function view(A::BTMatrix, ::Colon, j::Int)
-    BTCol(A, size(A)[1], j)
-end
+    m = A.M
+    n = A.n
+    r = A.r
+    a = A.a
 
-function getindex(A::BTCol{T}, i::Int)::T where T
-    A.A[i,A.j]
+    jj     = rem(j-1,n)+1
+    ishift = -1-div(j-1,n)+r
+
+    return view(a, (1+ishift):(m+ishift), jj)
 end
 
 ## row vectors
@@ -100,7 +99,7 @@ end
 
 ## conjugate
 struct BTConj{T} <: AbstractVector{T}
-    v::Union{BTRow{T},BTCol{T}}
+    v::BTRow{T}
 end
 
 size(A::BTConj) = size(A.v)
@@ -109,7 +108,6 @@ function getindex(A::BTConj{T}, i::Int)::T where T
 end
 
 conj(v::BTRow) = BTConj(v)
-conj(v::BTCol) = BTConj(v)
 
 ## custom dot product
 import Base:sum
@@ -168,57 +166,6 @@ end
 function rowforeach(F!::Function, x::BTConj)
     rowforeach(x.v) do j,a
         F!(j,conj(a))
-    end
-end
-
-## This is actually unnecessary, because columns are simpler
-## than rows, and we can just return a view into the
-## original matrix.  Nevertheless here it is, for symmetry.
-
-## Note on parallelizing: the use of a shared variable as
-## accumulator means this is not parallelized so easily.
-## Maybe returning a view is the more performant thing to
-## do.
-function dot(x::BTCol{T}, y::AbstractVector{T}) where T
-    sum = zero(T)
-    colforeach(x) do i,a
-        sum += conj(a) * y[i]
-    end
-    return sum
-end
-
-function sum(f::Function, x::BTCol{T}) where T
-    sum = 0
-    colforeach(x) do i,a
-        sum += f(a)
-    end
-    return sum
-end
-
-function axpby!(a::Number, x::BTCol{T}, b::Number, y::AbstractVector{T}) where T <:Union{Complex{Float64}, Float64}
-    colforeach(x) do i,x
-        y[i] = a*x + b*y[i]
-    end
-end
-
-function colforeach(F!::Function, x::BTConj)
-    colforeach(x.v) do i,a
-        F!(i,conj(a))
-    end
-end
-
-function colforeach(F!::Function, x::BTCol{T}) where T
-    j = x.j
-    m = x.m
-    n = x.A.n
-    r = x.A.r
-    a = x.A.a
-
-    jj     = rem(j-1,n)+1
-    ishift = -1-div(j-1,n)+r
-
-    for i=1:m
-        F!(i,a[i+ishift,jj])
     end
 end
 
