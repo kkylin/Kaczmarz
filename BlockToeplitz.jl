@@ -60,13 +60,18 @@ import Base:conj,getindex,setindex!,size,view
 
 size(A::BTMatrix) = A.M,A.N
 
+## this is slow
 function getindex(A::BTMatrix{T}, i::Int, j::Int)::T where T
     A.a[i-1-div(j-1,A.n)+A.r, rem(j-1,A.n)+1]
 end
 
-## column vectors do not need a separate struct, because
-## they correspond to contiguous subarrays in the original
-## matrix
+################################
+## column vectors
+
+## REK.jl relies on taking views of columns.  This is
+## straightforward, since columns of the block Toeplitz
+## matrix correspond to contiguous sub-columns in the
+## original matrix.
 
 function view(A::BTMatrix, ::Colon, j::Int)
     m = A.M
@@ -80,7 +85,11 @@ function view(A::BTMatrix, ::Colon, j::Int)
     return view(a, (1+ishift):(m+ishift), jj)
 end
 
+################################
 ## row vectors
+
+## To avoid copying, this means building custom view
+## operations.
 struct BTRow{T} <: AbstractVector{T}
     A::BTMatrix{T}
     n::Int
@@ -109,7 +118,11 @@ end
 
 conj(v::BTRow) = BTConj(v)
 
-## custom dot product
+## Custom dot(), sum(), etc, to avoid repeatedly calling the
+## (slow) getindex().  This is probably not as big a deal as
+## the performance we get from having fast column
+## operations, however, since columns tend to be much larger
+## than rows in least squares problems.
 import Base:sum
 import LinearAlgebra:dot,BLAS.axpby!
 export rowforeach,colforeach
