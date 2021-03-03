@@ -123,6 +123,9 @@ conj(v::BTRow) = BTConj(v)
 ## the performance we get from having fast column
 ## operations, however, since columns tend to be much larger
 ## than rows in least squares problems.
+
+## There's probably rooom for further optimizations here, by
+## e.g. calling BLAS, but also probably not worth the time.
 import Base:sum
 import LinearAlgebra:dot,BLAS.axpby!
 export rowforeach,colforeach
@@ -151,15 +154,21 @@ function sum(f::Function, x::BTRow{T}) where T
     return sum
 end
 
-function axpby!(a::Number, x::BTRow{T}, b::Number, y::AbstractVector{T}) where T <:Union{Complex{Float64}, Float64}
+function axpby!(a::Number, x::BTRow{T}, b::Number, y::AbstractVector{T}) where T <:Union{Complex{Float64},Float64}
     rowforeach(x) do j,x
         y[j] = a*x + b*y[j]
     end
 end
 
-function axpby!(a::Number, x::BTConj{T}, b::Number, y::AbstractVector{T}) where T <:Union{Complex{Float64}, Float64}
+function axpby!(a::Number, x::BTConj{T}, b::Number, y::AbstractVector{T}) where T <:Union{Complex{Float64},Float64}
     rowforeach(x.v) do j,x
         y[j] = a*conj(x) + b*y[j]
+    end
+end
+
+function rowforeach(F!::Function, x::BTConj)
+    rowforeach(x.v) do j,a
+        F!(j,conj(a))
     end
 end
 
@@ -173,12 +182,6 @@ function rowforeach(F!::Function, x::BTRow{T}) where T
         for j=1:n
             F!((k-1)*n+j,a[i-k+r,j])
         end
-    end
-end
-
-function rowforeach(F!::Function, x::BTConj)
-    rowforeach(x.v) do j,a
-        F!(j,conj(a))
     end
 end
 
