@@ -128,7 +128,7 @@ conj(v::BTRow) = BTConj(v)
 ## e.g. calling BLAS, but also probably not worth the time.
 import Base:sum
 import LinearAlgebra:dot,BLAS.axpby!
-export rowforeach,colforeach
+export rowforeach
 
 function dot(x::BTRow{T}, y::AbstractVector{T}) where T
     sum = zero(T)
