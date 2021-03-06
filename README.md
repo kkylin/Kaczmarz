@@ -15,7 +15,7 @@ attention to speed and memory, but there's no doubt more
 room for optimization.  The code can be a little cleaner,
 and better commented.
 
-This repository also contains BlockToeplitz.jl, a minimal,
+This repository also contains [BlockToeplitz.jl](https://github.com/kkylin/Kaczmarz/blob/github/BlockToeplitz.jl), a minimal,
 memory-efficient data structure for block Toeplitz matrices
 designed to work with Kaczmarz.jl. The two can operate
 independently, e.g., you can use Kaczmrz.jl with whatever
