@@ -147,12 +147,12 @@ function dot(x::BTConj{T}, y::AbstractVector{T}) where T
         1:r)
 end
 
-function sum(f::Function, x::BTRow{T}) where T
+function sum(f::Function, x::BTConj{T}) where T
     i = x.v.i
     n = x.v.A.n
     r = x.v.A.r
     a = x.v.A.a
-    sum(k->sum(f,view(a,i-k+r,:)),
+    sum(k->sum(f,conj(view(a,i-k+r,:))),
         1:r)
 end
 
