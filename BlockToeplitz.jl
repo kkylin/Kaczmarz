@@ -129,15 +129,6 @@ conj(v::BTRow) = BTConj(v)
 import Base:sum
 import LinearAlgebra:dot,BLAS.axpby!
 
-function dot(x::BTRow{T}, y::AbstractVector{T}) where T
-    i = x.i
-    n = x.A.n
-    r = x.A.r
-    a = x.A.a
-    sum(k->BLAS.dot(view(a,i-k+r,:),view(y,(k-1)*n+1:k*n)),
-        1:r)
-end
-
 function dot(x::BTConj{T}, y::AbstractVector{T}) where T
     i = x.v.i
     n = x.v.A.n
