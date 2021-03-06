@@ -29,7 +29,7 @@
 
 module BlockToeplitz
 
-using LinearAlgebra
+using LinearAlgebra,Base.Threads
 
 export BTMatrix
 
@@ -128,61 +128,41 @@ conj(v::BTRow) = BTConj(v)
 ## e.g. calling BLAS, but also probably not worth the time.
 import Base:sum
 import LinearAlgebra:dot,BLAS.axpby!
-export rowforeach
 
 function dot(x::BTRow{T}, y::AbstractVector{T}) where T
-    sum = zero(T)
-    rowforeach(x) do j,a
-        sum += conj(a) * y[j]
-    end
-    return sum
-end
-
-function dot(x::BTConj{T}, y::AbstractVector{T}) where T
-    sum = zero(T)
-    rowforeach(x.v) do j,a
-        sum += a * y[j]
-    end
-    return sum
-end
-
-function sum(f::Function, x::BTRow{T}) where T
-    sum = 0
-    rowforeach(x) do j,a
-        sum += f(a)
-    end
-    return sum
-end
-
-function axpby!(a::Number, x::BTRow{T}, b::Number, y::AbstractVector{T}) where T <:Union{Complex{Float64},Float64}
-    rowforeach(x) do j,x
-        y[j] = a*x + b*y[j]
-    end
-end
-
-function axpby!(a::Number, x::BTConj{T}, b::Number, y::AbstractVector{T}) where T <:Union{Complex{Float64},Float64}
-    rowforeach(x.v) do j,x
-        y[j] = a*conj(x) + b*y[j]
-    end
-end
-
-function rowforeach(F!::Function, x::BTConj)
-    rowforeach(x.v) do j,a
-        F!(j,conj(a))
-    end
-end
-
-function rowforeach(F!::Function, x::BTRow{T}) where T
     i = x.i
     n = x.A.n
     r = x.A.r
     a = x.A.a
+    sum(k->BLAS.dot(view(a,i-k+r,:),view(y,(k-1)*n+1:k*n)),
+        1:r)
+end
 
-    for k=1:r
-        for j=1:n
-            F!((k-1)*n+j,a[i-k+r,j])
-        end
-    end
+function dot(x::BTConj{T}, y::AbstractVector{T}) where T
+    i = x.v.i
+    n = x.v.A.n
+    r = x.v.A.r
+    a = x.v.A.a
+    sum(k->BLAS.dotu(view(a,i-k+r,:),view(y,(k-1)*n+1:k*n)),
+        1:r)
+end
+
+function sum(f::Function, x::BTRow{T}) where T
+    i = x.v.i
+    n = x.v.A.n
+    r = x.v.A.r
+    a = x.v.A.a
+    sum(k->sum(f,view(a,i-k+r,:)),
+        1:r)
+end
+
+function axpby!(a::Number, x::BTConj{T}, b::Number, y::AbstractVector{T}) where T <:Union{Complex{Float64},Float64}
+    i = x.v.i
+    n = x.v.A.n
+    r = x.v.A.r
+    v = x.v.A.a
+    foreach(k->BLAS.axpby!(a,conj(view(v,i-k+r,:)),b,view(y,(k-1)*n+1:k*n)),
+            1:r)
 end
 
 end #module
