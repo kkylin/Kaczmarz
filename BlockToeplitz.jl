@@ -128,30 +128,37 @@ import Base:sum
 import LinearAlgebra:dot,BLAS.axpby!
 
 function dot(x::BTConj{T}, y::AbstractVector{T}) where T
-    i = x.v.i
-    n = x.v.A.n
-    r = x.v.A.r
-    a = x.v.A.a
-    sum(k->BLAS.dotu(view(a,i-k+r,:),view(y,(k-1)*n+1:k*n)),
-        1:r)
+    rowforeach(x, y; accum=sum) do xx,yy
+        BLAS.dotu(xx,yy)
+    end
 end
 
 function sum(f::Function, x::BTConj{T}) where T
-    i = x.v.i
-    n = x.v.A.n
-    r = x.v.A.r
-    a = x.v.A.a
-    sum(k->sum(f,conj(view(a,i-k+r,:))),
-        1:r)
+    rowforeach(x; accum=sum) do xx
+        sum(f,xx)
+    end
 end
 
 function axpby!(a::Number, x::BTConj{T}, b::Number, y::AbstractVector{T}) where T <:Union{Complex{Float64},Float64}
+    rowforeach(x, y) do xx,yy
+        BLAS.axpby!(a, conj(xx), b, yy)
+    end
+end
+
+function rowforeach(f::Function, x::BTConj{T}; accum=foreach) where T <:Union{Complex{Float64},Float64}
     i = x.v.i
     n = x.v.A.n
     r = x.v.A.r
     v = x.v.A.a
-    foreach(k->BLAS.axpby!(a,conj(view(v,i-k+r,:)),b,view(y,(k-1)*n+1:k*n)),
-            1:r)
+    accum(k->f(view(v,i-k+r,:)),1:r)
+end
+
+function rowforeach(f::Function, x::BTConj{T}, y::AbstractVector{T}; accum=foreach) where T <:Union{Complex{Float64},Float64}
+    i = x.v.i
+    n = x.v.A.n
+    r = x.v.A.r
+    v = x.v.A.a
+    accum(k->f(view(v,i-k+r,:),view(y,(k-1)*n+1:k*n)),1:r)
 end
 
 end #module
