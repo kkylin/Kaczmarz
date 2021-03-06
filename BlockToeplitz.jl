@@ -20,8 +20,9 @@
 ## similar fashion.
 
 ## This code is neither minimal (it implements more than is
-## needed for REK) nor complete (it does not implement all
-## matrix operations).  But should be good enough for now.
+## needed for Kaczmarz) nor complete (it does not implement
+## all matrix operations).  But should be good enough for
+## now.
 
 
 ################################
@@ -68,7 +69,7 @@ end
 ################################
 ## column vectors
 
-## REK.jl relies on taking views of columns.  This is
+## Kaczmarz.jl relies on taking views of columns.  This is
 ## straightforward, since columns of the block Toeplitz
 ## matrix correspond to contiguous sub-columns in the
 ## original matrix.

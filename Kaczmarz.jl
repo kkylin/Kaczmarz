@@ -1,5 +1,5 @@
 ######################################################
-## REK.jl
+## Kaczmarz.jl
 
 ## This file implements the algorithm proposed in
 
@@ -9,7 +9,7 @@
 
 ## It has been extended slightly to handle complex vectors.
 
-module REK
+module Kaczmarz
 
 using LinearAlgebra,Util
 
@@ -90,7 +90,7 @@ function solve(A::AbstractMatrix{T},
             
             if ( row_resid2 <= threshold && col_resid2 <= threshold )
                 if verbose
-                    println("#REK: early exit")
+                    println("#Kaczmarz: early exit")
                 end
                 throw((x,loopcount,norm2,row_resid2,col_resid2))
             end
@@ -101,7 +101,7 @@ function solve(A::AbstractMatrix{T},
     ## good enough for now.
     try
         if verbose
-            foreach(oneloop, 1:(maxcount*subcount), "REK"; delay=delay)
+            foreach(oneloop, 1:(maxcount*subcount), "Kaczmarz"; delay=delay)
         else
             foreach(oneloop, 1:(maxcount*subcount))
         end

@@ -1,6 +1,6 @@
 module BTtest
 
-using REK,BlockToeplitz
+using Kaczmarz,BlockToeplitz
 
 Complex128 = Complex{Float64}
 
