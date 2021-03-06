@@ -1,6 +1,6 @@
 # Randomized Extended Kaczmarz method
 
-Kaczmarz.jl implements the Randomized Extended Kaczmarz
+[Kaczmarz.jl](https://github.com/kkylin/Kaczmarz/blob/github/Kaczmarz.jl) implements the Randomized Extended Kaczmarz
 method (REK) method as described in
 
 > A Zouzias and NM Freris, "Randomized extended Kaczmarz for
@@ -23,11 +23,11 @@ matrix structures you like.
 
 The main test scripts are
 
-- BTtest-backslash.jl: generate a test least-squares problem
+- [BTtest-backslash.jl](https://github.com/kkylin/Kaczmarz/blob/github/BTtest-backslash.jl): generate a test least-squares problem
   and solve it using Julia's `\`, which presumably uses SVD;
   and
 
-- BTtest-kaczmarz.jl: generate a test least-squares problem
+- [BTtest-kaczmarz.jl](https://github.com/kkylin/Kaczmarz/blob/github/BTtest-kaczmarz.jl): generate a test least-squares problem
   and solve it using REK.
 
 This implementation of REK seems reasonably fast, and has
