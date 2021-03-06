@@ -24,7 +24,7 @@ matrix structures you like.
 The main test scripts are
 
 - BTtest-backslash.jl: generate a test least-squares problem
-  and solve it using Julia's \\, which presumably uses SVD;
+  and solve it using Julia's `\`, which presumably uses SVD;
   and
 
 - BTtest-kaczmarz.jl: generate a test least-squares problem
