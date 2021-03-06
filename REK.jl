@@ -106,7 +106,11 @@ function solve(A::AbstractMatrix{T},
             foreach(oneloop, 1:(maxcount*subcount))
         end
     catch output
-        return output
+        if typeof(output) <: Tuple
+            return output
+        else
+            rethrow(output)
+        end
     end
     return x,maxcount*subcount,norm2,row_resid2,col_resid2
 end
