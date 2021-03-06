@@ -1,20 +1,33 @@
 # Randomized Extended Kaczmarz method
 
-The code in this directory implements the Randomized
-Extended Kaczmarz method (REK) method as described in
+Kaczmarz.jl implements the Randomized Extended Kaczmarz
+method (REK) method as described in
 
-	A Zouzias and NM Freris, "Randomized extended Kaczmarz
-	for solving least squares," *SIAM J. Matrix Anal. Appl.*
-	**34** (2013), [doi:10.1137/120889897](https://doi.org/10.1137/120889897)
+> A Zouzias and NM Freris, "Randomized extended Kaczmarz for
+solving least squares," *SIAM J. Matrix Anal. Appl.*  **34**
+(2013),
+[doi:10.1137/120889897](https://doi.org/10.1137/120889897)
 
-There are some toy tests.  The main test scripts are
+This code is the result of my effort to understand the
+algorithm.  There are some toy tests, but it has not been
+extensively tested.  Similarly, I tried to pay some
+attention to speed and memory, but there's no doubt more
+room for optimization.  The code can be a little cleaner,
+and better commented.
+
+This repository also contains BlockToeplitz.jl, a minimal,
+memory-efficient data structure for block Toeplitz matrices
+designed to work with Kaczmarz.jl. The two can operate
+independently, e.g., you can use Kaczmrz.jl with whatever
+matrix structures you like.
+
+The main test scripts are
 
 - BTtest-backslash.jl: generate a test least-squares problem
-  and solve it using '\'; and
+  and solve it using Julia's \; and
 
 - BTtest-kaczmarz.jl: generate a test least-squares problem
   and solve it using REK.
 
 This implementation of REK seems reasonably fast, and has
-good memory usage compared to \ (which presumably computes
-an SVD).
+good memory usage compared to \ (which presumably uses SVD).
