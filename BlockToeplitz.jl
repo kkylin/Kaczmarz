@@ -29,7 +29,7 @@
 
 module BlockToeplitz
 
-using LinearAlgebra,Base.Threads
+using LinearAlgebra
 
 export BTMatrix
 
