@@ -117,8 +117,8 @@ function solve(A::AbstractMatrix{T},
         end
     end
 
-    ## Not the best way to implement a nonlocal exit, but
-    ## good enough for now.
+    ## Perhaps not the best way to implement a nonlocal
+    ## exit, but good enough for now.
     try
         if verbose
             foreach(oneloop, 1:(maxcount*subcount), "Kaczmarz"; delay=delay)
@@ -129,7 +129,7 @@ function solve(A::AbstractMatrix{T},
         if typeof(output) <: Tuple
             return output
         else
-            rethrow(output)
+            rethrow()
         end
     end
     return x,maxcount*subcount,norm2,row_resid2,col_resid2
