@@ -1,8 +1,32 @@
 ######################################################
 ## BlockToeplitz.jl
 
-## Given an m-vector A, this provides a representation of
-## the size-(m,r) Toeplitz matrix of the form
+## This file implements a simple block Toeplitz matrix data
+## structure.  It is meant for use with REK.jl.
+
+# Copyright (C) 2021 by Kevin K Lin <klin@math.arizona.edu>
+
+# This program is free software; you can redistribute it
+# and/or modify it under the terms of the GNU General Public
+# License as published by the Free Software Foundation;
+# either version 2 of the License, or (at your option) any
+# later version.
+
+# This program is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied
+# warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+# PURPOSE.  See the GNU General Public License for more
+# details.
+
+# You should have received a copy of the GNU General Public
+# License along with this program; if not, write to the Free
+# Software Foundation, Inc., 51 Franklin Street, Fifth
+# Floor, Boston, MA 02110-1301 USA.
+
+######################################################
+## Description: given an m-vector A, this provides a
+## representation of the size-(m,r) Toeplitz matrix of the
+## form
 
 ## A[r]   A[r-1] ⋯  A[2]    A[1]
 ## A[r+1] A[r]   ⋯  A[3]    A[2]

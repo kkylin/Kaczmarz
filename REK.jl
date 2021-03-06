@@ -1,13 +1,33 @@
 ######################################################
 ## REK.jl
 
-## This file implements the algorithm proposed in
+## This file implements the Randomized extended Kaczmarz
+## algorithm as described in
 
 ## A Zouzias and NM Freris, "Randomized extended Kaczmarz
 ## for solving least squares," SIAM J Matrix Anal Appl 34
 ## (2013), doi:10.1137/120889897
 
-## It has been extended slightly to handle complex vectors.
+## with minor extendsions to handle complex inputs.
+
+# Copyright (C) 2021 by Kevin K Lin <klin@math.arizona.edu>
+
+# This program is free software; you can redistribute it
+# and/or modify it under the terms of the GNU General Public
+# License as published by the Free Software Foundation;
+# either version 2 of the License, or (at your option) any
+# later version.
+
+# This program is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied
+# warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+# PURPOSE.  See the GNU General Public License for more
+# details.
+
+# You should have received a copy of the GNU General Public
+# License along with this program; if not, write to the Free
+# Software Foundation, Inc., 51 Franklin Street, Fifth
+# Floor, Boston, MA 02110-1301 USA.
 
 module REK
 
