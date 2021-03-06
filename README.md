@@ -33,4 +33,4 @@ The main test scripts are
 This implementation of REK seems reasonably fast, and has
 good memory usage compared to, e.g., SVD.
 
-## Kevin K Lin <[klin@math.arizona.edu](mailto:klin@math.arizona.edu)>
+[Kevin K Lin](https://math.arizona.edu/~klin)
