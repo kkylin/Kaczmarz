@@ -2,7 +2,7 @@
 ## BlockToeplitz.jl
 
 ## This file implements a simple block Toeplitz matrix data
-## structure.  It is meant for use with REK.jl.
+## structure.  It is meant for use with Kaczmarz.jl.
 
 # Copyright (C) 2021 by Kevin K Lin <klin@math.arizona.edu>
 
