@@ -24,10 +24,11 @@ matrix structures you like.
 The main test scripts are
 
 - BTtest-backslash.jl: generate a test least-squares problem
-  and solve it using Julia's \; and
+  and solve it using Julia's '\', which presumably uses SVD;
+  and
 
 - BTtest-kaczmarz.jl: generate a test least-squares problem
   and solve it using REK.
 
 This implementation of REK seems reasonably fast, and has
-good memory usage compared to \ (which presumably uses SVD).
+good memory usage compared to, e.g., SVD.
