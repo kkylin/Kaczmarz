@@ -118,14 +118,12 @@ end
 
 conj(v::BTRow) = BTConj(v)
 
-## Custom dot(), sum(), etc, to avoid repeatedly calling the
-## (slow) getindex().  This is probably not as big a deal as
-## the performance we get from having fast column
-## operations, however, since columns tend to be much larger
-## than rows in least squares problems.
-
-## There's probably rooom for further optimizations here, by
-## e.g. calling BLAS, but also probably not worth the time.
+## Custom dot(), sum(), etc, for row vectors, to avoid
+## repeatedly calling the (slow) getindex().  This is
+## probably not as big a deal as the performance we get from
+## having fast column operations, however, since columns
+## tend to be much larger than rows in least squares
+## problems.
 import Base:sum
 import LinearAlgebra:dot,BLAS.axpby!
 
