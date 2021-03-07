@@ -171,19 +171,19 @@ function axpby!(a::Number, x::BTConj{T}, b::Number, y::AbstractVector{T}) where 
 end
 
 function foreachrowblock(f::Function, x::BTConj{T}; accum=foreach) where T <:Union{Complex{Float64},Float64}
+    r = x.v.A.r
+    A = x.v.A.a
     i = x.v.i
     n = x.v.A.n
-    r = x.v.A.r
-    v = x.v.A.a
-    accum(k->f(conj(view(v,i-k+r,:))),1:r)
+    accum(k->f(conj(view(A,i-k+r,:))),1:r)
 end
 
 function foreachrowblock(f::Function, x::BTConj{T}, y::AbstractVector{T}; accum=foreach) where T <:Union{Complex{Float64},Float64}
+    r = x.v.A.r
+    A = x.v.A.a
     i = x.v.i
     n = x.v.A.n
-    r = x.v.A.r
-    v = x.v.A.a
-    accum(k->f(conj(view(v,i-k+r,:)),view(y,(k-1)*n+1:k*n)),1:r)
+    accum(k->f(conj(view(A,i-k+r,:)),view(y,(k-1)*n+1:k*n)),1:r)
 end
 
 end #module
