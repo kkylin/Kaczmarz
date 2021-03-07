@@ -153,6 +153,17 @@ conj(v::BTRow) = BTConj(v)
 ## having fast column operations, however, since columns
 ## tend to be much larger than rows in least squares
 ## problems.
+
+## TODO: This may have some room for improvement,
+## performance-wise.  One possiblity is changing the order
+## foreachrowblock() loops through the original matrix to
+## improve locality: right now, the block number k=1:r is
+## the outer loop, and the inner loop goes across the rows
+## of the original A.  But Julia uses column-major format,
+## and if we make k=1:r the inner loop then entries of A are
+## referenced sequentially.  Of course in operations like
+## dot(), what we gain in locality on one argument, we'll
+## lose on the other.  So maybe not worth the trouble.
 import Kaczmarz:sumabs2
 import LinearAlgebra:dot,BLAS.axpy!
 
