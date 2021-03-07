@@ -1,6 +1,5 @@
-include("Kaczmarz-a.jl")
-using .Kaczmarz
-using BTtest,LinearAlgebra,Random
+include("BTtest-a.jl")
+using .BTtest,LinearAlgebra,Random
 
 BTtest.test()
 

@@ -188,7 +188,15 @@ function sumabs2(x::Union{BTRow{T},BTConj{T}}) where T
     end
 end
 
-function foreachrowblock(f::Function, x::Union{BTRow{T},BTConj{T}}; accum=foreach) where T <:Union{Complex{Float64},Float64}
+function foreachrowblock(f::Function, x::BTRow{T}; accum=foreach) where T <:Union{Complex{Float64},Float64}
+    r = x.A.r
+    A = x.A.a
+    i = x.i
+    n = x.A.n
+    accum(k->f(view(A,i-k+r,:)),1:r)
+end
+
+function foreachrowblock(f::Function, x::BTConj{T}; accum=foreach) where T <:Union{Complex{Float64},Float64}
     r = x.v.A.r
     A = x.v.A.a
     i = x.v.i
@@ -196,7 +204,15 @@ function foreachrowblock(f::Function, x::Union{BTRow{T},BTConj{T}}; accum=foreac
     accum(k->f(view(A,i-k+r,:)),1:r)
 end
 
-function foreachrowblock(f::Function, x::Union{BTRow{T},BTConj{T}}, y::AbstractVector{T}; accum=foreach) where T <:Union{Complex{Float64},Float64}
+function foreachrowblock(f::Function, x::BTRow{T}, y::AbstractVector{T}; accum=foreach) where T <:Union{Complex{Float64},Float64}
+    r = x.A.r
+    A = x.A.a
+    i = x.i
+    n = x.A.n
+    accum(k->f(view(A,i-k+r,:),view(y,(k-1)*n+1:k*n)),1:r)
+end
+
+function foreachrowblock(f::Function, x::BTConj{T}, y::AbstractVector{T}; accum=foreach) where T <:Union{Complex{Float64},Float64}
     r = x.v.A.r
     A = x.v.A.a
     i = x.v.i
