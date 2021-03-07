@@ -92,11 +92,10 @@ function solve(A::AbstractMatrix{T},
             j = rpick(colprob)
 
             # z .-= dot(col[j],z)/colsum[j] .* col[j]
-            BLAS.axpby!(-dot(col[j],z)/colsum[j], col[j], 1.0, z)
+            BLAS.axpy!(-dot(col[j],z)/colsum[j], col[j], z)
 
             # x .+= (b[i] - z[i] - dot(row[i],x)) / rowsum[i] .* row[i]
-            BLAS.axpby!((b[i] - z[i] - dot(row[i],x)) / rowsum[i], row[i],
-                        1.0, x)
+            BLAS.axpy!((b[i] - z[i] - dot(row[i],x)) / rowsum[i], row[i], x)
 
             ## progress report
             update()
