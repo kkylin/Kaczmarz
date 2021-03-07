@@ -9,7 +9,7 @@ function TimeReporter(maxcount;
 
     let t0    = time(),
         tlast = 0.0,
-        count = 0,
+        count = 0
 
         function()
             count = count + 1
