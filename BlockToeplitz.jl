@@ -154,7 +154,13 @@ import LinearAlgebra:dot,BLAS.axpby!
 
 function dot(x::BTConj{T}, y::AbstractVector{T}) where T
     foreachrowblock(x, y; accum=sum) do xblk,yblk
-        BLAS.dot(xblk,yblk)
+        try
+            dot(xblk,yblk)
+        catch
+            @show typeof(xblk)
+            @show typeof(yblk)
+            rethrow()
+        end
     end
 end
 
