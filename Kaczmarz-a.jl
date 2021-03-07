@@ -37,8 +37,6 @@ using LinearAlgebra,.Util
 
 export solve
 
-VERSION = v"0.1"
-
 function solve(A::AbstractMatrix{T},
                b::AbstractVector{T};
                eps      = 1e-6,  ## relative error tolerance
@@ -85,7 +83,7 @@ function solve(A::AbstractMatrix{T},
     norm2 = row_resid2 = col_resid2 = 0.
 
     ## progress report
-    update = TimeReporter(maxcount*subcount; tag="Kaczmarz", period=period)
+    update = TimeReporter(maxcount*subcount; tag="Kaczmarz-a", period=period)
 
     ## In the paper, the algorithm is formulated as a pair
     ## of nested loops.  Here I have unrolled the loops so
