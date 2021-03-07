@@ -154,13 +154,7 @@ import LinearAlgebra:dot,BLAS.axpby!
 
 function dot(x::BTConj{T}, y::AbstractVector{T}) where T
     foreachrowblock(x, y; accum=sum) do xblk,yblk
-        try
-            dot(xblk,yblk)
-        catch
-            @show typeof(xblk)
-            @show typeof(yblk)
-            rethrow()
-        end
+        dot(xblk,yblk)
     end
 end
 
@@ -181,7 +175,7 @@ function foreachrowblock(f::Function, x::BTConj{T}; accum=foreach) where T <:Uni
     A = x.v.A.a
     i = x.v.i
     n = x.v.A.n
-    accum(k->f(conj(view(A,i-k+r,:))),1:r)
+    accum(k->f(view(A,i-k+r,:)),1:r)
 end
 
 function foreachrowblock(f::Function, x::BTConj{T}, y::AbstractVector{T}; accum=foreach) where T <:Union{Complex{Float64},Float64}
@@ -189,7 +183,7 @@ function foreachrowblock(f::Function, x::BTConj{T}, y::AbstractVector{T}; accum=
     A = x.v.A.a
     i = x.v.i
     n = x.v.A.n
-    accum(k->f(conj(view(A,i-k+r,:)),view(y,(k-1)*n+1:k*n)),1:r)
+    accum(k->f(view(A,i-k+r,:),view(y,(k-1)*n+1:k*n)),1:r)
 end
 
 end #module
