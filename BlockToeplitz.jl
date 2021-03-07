@@ -149,24 +149,23 @@ conj(v::BTRow) = BTConj(v)
 ## having fast column operations, however, since columns
 ## tend to be much larger than rows in least squares
 ## problems.
-import Base:sum
-import LinearAlgebra:dot,BLAS.axpby!
+import LinearAlgebra:dot,BLAS.axpy!,BLAS.nrm2
 
 function dot(x::BTConj{T}, y::AbstractVector{T}) where T
     foreachrowblock(x, y; accum=sum) do xblk,yblk
-        dot(xblk,yblk)
+        BLAS.dotu(xblk,yblk)
     end
 end
 
-function sum(f::Function, x::BTConj{T}) where T
+function nrm2(x::BTConj{T}) where T
     foreachrowblock(x; accum=sum) do xblk
-        sum(f,xblk)
+        nrm2(xblk)^2
     end
 end
 
-function axpby!(a::Number, x::BTConj{T}, b::Number, y::AbstractVector{T}) where T <:Union{Complex{Float64},Float64}
-    foreachrowblock(x, y) do xblk,yblk
-        BLAS.axpby!(a, xblk, b, yblk)
+function axpy!(a::Number, x::BTConj{T}, y::AbstractVector{T}) where T <:Union{Complex{Float64},Float64}
+    foreachrowblock(x,y) do xblk,yblk
+        BLAS.axpy!(a, conj(xblk), yblk)
     end
 end
 
