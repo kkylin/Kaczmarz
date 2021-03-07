@@ -117,7 +117,7 @@ function solve(A::AbstractMatrix{T},
         
         if ( row_resid2 <= threshold && col_resid2 <= threshold )
             if verbose
-                println("#Kaczmarz: early exit")
+                println("#Kaczmarz-a: early exit")
             end
             return x,c*subcount,norm2,row_resid2,col_resid2
         end
