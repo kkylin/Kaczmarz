@@ -51,12 +51,12 @@ function solve(A::AbstractMatrix{T},
     ## precompute rows, their squared sums, and
     ## corresponding probabilities
     row     = map(i->conj(view(A,i,:)), 1:m)
-    rowsum  = map(r->BLAS.nrm2(r)^2, row)
+    rowsum  = map(r->sum(abs2,r), row)
     rowprob = rowsum ./ sum(rowsum)
 
     ## same for cols
     col     = map(j->view(A,:,j), 1:n)
-    colsum  = map(c->BLAS.nrm2(c)^2, col)
+    colsum  = map(c->sum(abs2,c), col)
     colprob = colsum ./ sum(colsum)
     
     ## these are needed for the convergence test
@@ -101,7 +101,7 @@ function solve(A::AbstractMatrix{T},
             update()
         end
         ## don't check too often
-        norm2 = BLAS.nrm2(x)^2
+        norm2 = sum(abs2,x)
         row_resid2 = sum(iabs2,1:m)
         col_resid2 = sum(jabs2,1:n)
         threshold  = epsFnorm2*norm2
