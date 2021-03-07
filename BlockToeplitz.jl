@@ -154,7 +154,7 @@ import LinearAlgebra:dot,BLAS.axpby!
 
 function dot(x::BTConj{T}, y::AbstractVector{T}) where T
     foreachrowblock(x, y; accum=sum) do xblk,yblk
-        BLAS.dotu(xblk,yblk)
+        BLAS.dot(xblk,yblk)
     end
 end
 
@@ -166,7 +166,7 @@ end
 
 function axpby!(a::Number, x::BTConj{T}, b::Number, y::AbstractVector{T}) where T <:Union{Complex{Float64},Float64}
     foreachrowblock(x, y) do xblk,yblk
-        BLAS.axpby!(a, conj(xblk), b, yblk)
+        BLAS.axpby!(a, xblk, b, yblk)
     end
 end
 
@@ -175,7 +175,7 @@ function foreachrowblock(f::Function, x::BTConj{T}; accum=foreach) where T <:Uni
     n = x.v.A.n
     r = x.v.A.r
     v = x.v.A.a
-    accum(k->f(view(v,i-k+r,:)),1:r)
+    accum(k->f(conj(view(v,i-k+r,:))),1:r)
 end
 
 function foreachrowblock(f::Function, x::BTConj{T}, y::AbstractVector{T}; accum=foreach) where T <:Union{Complex{Float64},Float64}
@@ -183,7 +183,7 @@ function foreachrowblock(f::Function, x::BTConj{T}, y::AbstractVector{T}; accum=
     n = x.v.A.n
     r = x.v.A.r
     v = x.v.A.a
-    accum(k->f(view(v,i-k+r,:),view(y,(k-1)*n+1:k*n)),1:r)
+    accum(k->f(conj(view(v,i-k+r,:)),view(y,(k-1)*n+1:k*n)),1:r)
 end
 
 end #module
