@@ -90,6 +90,10 @@ function getindex(A::BTMatrix{T}, i::Int, j::Int)::T where T
     A.a[i-1-div(j-1,A.n)+A.r, rem(j-1,A.n)+1]
 end
 
+function conj(A::BTMatrix{T}) where T
+    BTMatrix(conj(A.a), A.r, A.m, A.n, A.M, A.N)
+end
+
 ################################
 ## column vectors
 
@@ -152,9 +156,21 @@ conj(v::BTRow) = BTConj(v)
 import Kaczmarz:sumabs2
 import LinearAlgebra:dot,BLAS.axpy!
 
+function dot(x::BTRow{T}, y::AbstractVector{T}) where T
+    foreachrowblock(x, y; accum=sum) do xblk,yblk
+        dot(xblk,yblk)
+    end
+end
+
 function dot(x::BTConj{T}, y::AbstractVector{T}) where T
     foreachrowblock(x, y; accum=sum) do xblk,yblk
         BLAS.dotu(xblk,yblk)
+    end
+end
+
+function axpy!(a::Number, x::BTRow{T}, y::AbstractVector{T}) where T <:Union{Complex{Float64},Float64}
+    foreachrowblock(x,y) do xblk,yblk
+        BLAS.axpy!(a, xblk, yblk)
     end
 end
 
@@ -166,13 +182,13 @@ function axpy!(a::Number, x::BTConj{T}, y::AbstractVector{T}) where T <:Union{Co
 end
 
 ## this is the one Kaczmarz-specific optimization
-function sumabs2(x::BTConj{T}) where T
+function sumabs2(x::Union{BTRow{T},BTConj{T}}) where T
     foreachrowblock(x; accum=sum) do xblk
         sum(abs2,xblk)
     end
 end
 
-function foreachrowblock(f::Function, x::BTConj{T}; accum=foreach) where T <:Union{Complex{Float64},Float64}
+function foreachrowblock(f::Function, x::Union{BTRow{T},BTConj{T}}; accum=foreach) where T <:Union{Complex{Float64},Float64}
     r = x.v.A.r
     A = x.v.A.a
     i = x.v.i
@@ -180,7 +196,7 @@ function foreachrowblock(f::Function, x::BTConj{T}; accum=foreach) where T <:Uni
     accum(k->f(view(A,i-k+r,:)),1:r)
 end
 
-function foreachrowblock(f::Function, x::BTConj{T}, y::AbstractVector{T}; accum=foreach) where T <:Union{Complex{Float64},Float64}
+function foreachrowblock(f::Function, x::Union{BTRow{T},BTConj{T}}, y::AbstractVector{T}; accum=foreach) where T <:Union{Complex{Float64},Float64}
     r = x.v.A.r
     A = x.v.A.a
     i = x.v.i
