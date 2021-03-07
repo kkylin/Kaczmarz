@@ -149,7 +149,7 @@ conj(v::BTRow) = BTConj(v)
 ## having fast column operations, however, since columns
 ## tend to be much larger than rows in least squares
 ## problems.
-import Base:sum
+import Kaczmarz:sumabs2
 import LinearAlgebra:dot,BLAS.axpy!
 
 function dot(x::BTConj{T}, y::AbstractVector{T}) where T
@@ -158,16 +158,17 @@ function dot(x::BTConj{T}, y::AbstractVector{T}) where T
     end
 end
 
-function sum(f::Function, x::BTConj{T}) where T
-    foreachrowblock(x; accum=sum) do xblk
-        sum(abs2,xblk)
-    end
-end
-
 function axpy!(a::Number, x::BTConj{T}, y::AbstractVector{T}) where T <:Union{Complex{Float64},Float64}
     foreachrowblock(x,y) do xblk,yblk
         ## the conj() is allocating
         BLAS.axpy!(a, conj(xblk), yblk)
+    end
+end
+
+## this is the one Kaczmarz-specific optimization
+function sumabs2(x::BTConj{T}) where T
+    foreachrowblock(x; accum=sum) do xblk
+        sum(abs2,xblk)
     end
 end
 
