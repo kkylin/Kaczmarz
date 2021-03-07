@@ -156,21 +156,9 @@ conj(v::BTRow) = BTConj(v)
 import Kaczmarz:sumabs2
 import LinearAlgebra:dot,BLAS.axpy!
 
-function dot(x::BTRow{T}, y::AbstractVector{T}) where T
-    foreachrowblock(x, y; accum=sum) do xblk,yblk
-        dot(xblk,yblk)
-    end
-end
-
 function dot(x::BTConj{T}, y::AbstractVector{T}) where T
     foreachrowblock(x, y; accum=sum) do xblk,yblk
         BLAS.dotu(xblk,yblk)
-    end
-end
-
-function axpy!(a::Number, x::BTRow{T}, y::AbstractVector{T}) where T <:Union{Complex{Float64},Float64}
-    foreachrowblock(x,y) do xblk,yblk
-        BLAS.axpy!(a, xblk, yblk)
     end
 end
 
@@ -188,28 +176,12 @@ function sumabs2(x::Union{BTRow{T},BTConj{T}}) where T
     end
 end
 
-function foreachrowblock(f::Function, x::BTRow{T}; accum=foreach) where T <:Union{Complex{Float64},Float64}
-    r = x.A.r
-    A = x.A.a
-    i = x.i
-    n = x.A.n
-    accum(k->f(view(A,i-k+r,:)),1:r)
-end
-
 function foreachrowblock(f::Function, x::BTConj{T}; accum=foreach) where T <:Union{Complex{Float64},Float64}
     r = x.v.A.r
     A = x.v.A.a
     i = x.v.i
     n = x.v.A.n
     accum(k->f(view(A,i-k+r,:)),1:r)
-end
-
-function foreachrowblock(f::Function, x::BTRow{T}, y::AbstractVector{T}; accum=foreach) where T <:Union{Complex{Float64},Float64}
-    r = x.A.r
-    A = x.A.a
-    i = x.i
-    n = x.A.n
-    accum(k->f(view(A,i-k+r,:),view(y,(k-1)*n+1:k*n)),1:r)
 end
 
 function foreachrowblock(f::Function, x::BTConj{T}, y::AbstractVector{T}; accum=foreach) where T <:Union{Complex{Float64},Float64}
