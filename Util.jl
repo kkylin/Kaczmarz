@@ -14,7 +14,7 @@ function TimeReporter(maxcount;
         function()
             count = count + 1
             dt = time() - t0
-            if dt >= tlast + delay
+            if dt >= tlast + period
                 tlast = dt
                 println("#", tag, ": ", count, "/",
                         maxcount,

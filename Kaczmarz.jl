@@ -118,7 +118,7 @@ function solve(A::AbstractMatrix{T},
             if verbose
                 println("#Kaczmarz: early exit")
             end
-            return x,loopcount,norm2,row_resid2,col_resid2
+            return x,c*subcount,norm2,row_resid2,col_resid2
         end
     end
     return x,maxcount*subcount,norm2,row_resid2,col_resid2
