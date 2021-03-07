@@ -1,5 +1,5 @@
 ######################################################
-## Kaczmarz.jl
+## Kaczmarz-a.jl
 
 ## This file implements the Randomized extended Kaczmarz
 ## algorithm as described in
@@ -8,7 +8,8 @@
 ## for solving least squares," SIAM J Matrix Anal Appl 34
 ## (2013), doi:10.1137/120889897
 
-## with minor extendsions to handle complex inputs.
+## with minor extendsions to handle complex inputs.  This
+## version computes the conjugate up front.
 
 # Copyright (C) 2021 by Kevin K Lin <klin@math.arizona.edu>
 
