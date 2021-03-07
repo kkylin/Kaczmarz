@@ -31,7 +31,9 @@
 
 module Kaczmarz
 
-using LinearAlgebra,Util
+include("Util.jl")
+
+using LinearAlgebra,.Util
 
 export solve
 
@@ -41,6 +43,7 @@ function solve(A::AbstractMatrix{T},
                maxcount = 1000,
                delay    = 10,  ## report freq, in sec
                verbose  = true,
+               period   = 10.0,
                ) where T <: Number
 
     m,n = size(A)
@@ -77,14 +80,14 @@ function solve(A::AbstractMatrix{T},
 
     norm2 = row_resid2 = col_resid2 = 0.
 
+    ## progress report
+    update = TimeReporter(maxcount*subcount; tag="Kaczmarz", period=period)
+
     ## In the paper, the algorithm is formulated as a pair
     ## of nested loops.  Here I have unrolled the loops so
     ## that ETA is calculated correctly.
-    function oneloop(loopcount)
-        c  = div(loopcount,subcount)
-        cc = rem(loopcount,subcount)
-
-        if cc > 0
+    for c=1:maxcount
+        for cc=1:subcount
             i = rpick(rowprob)
             j = rpick(colprob)
 
@@ -94,42 +97,28 @@ function solve(A::AbstractMatrix{T},
             # x .+= (b[i] - z[i] - dot(row[i],x)) / rowsum[i] .* row[i]
             BLAS.axpby!((b[i] - z[i] - dot(row[i],x)) / rowsum[i], row[i],
                         1.0, x)
-        else
-            ## don't check too often
-            norm2 = sum(abs2,x)
-            row_resid2 = sum(iabs2,1:m)
-            col_resid2 = sum(jabs2,1:n)
-            threshold  = epsFnorm2*norm2
 
-            if verbose
-                @show norm2
-                @show row_resid2
-                @show col_resid2
-                @show threshold
-            end
-            
-            if ( row_resid2 <= threshold && col_resid2 <= threshold )
-                if verbose
-                    println("#Kaczmarz: early exit")
-                end
-                throw((x,loopcount,norm2,row_resid2,col_resid2))
-            end
+            ## progress report
+            update()
         end
-    end
+        ## don't check too often
+        norm2 = sum(abs2,x)
+        row_resid2 = sum(iabs2,1:m)
+        col_resid2 = sum(jabs2,1:n)
+        threshold  = epsFnorm2*norm2
 
-    ## Perhaps not the best way to implement a nonlocal
-    ## exit, but good enough for now.
-    try
         if verbose
-            foreach(oneloop, 1:(maxcount*subcount), "Kaczmarz"; delay=delay)
-        else
-            foreach(oneloop, 1:(maxcount*subcount))
+            @show norm2
+            @show row_resid2
+            @show col_resid2
+            @show threshold
         end
-    catch output
-        if typeof(output) <: Tuple
-            return output
-        else
-            rethrow()
+        
+        if ( row_resid2 <= threshold && col_resid2 <= threshold )
+            if verbose
+                println("#Kaczmarz: early exit")
+            end
+            return x,loopcount,norm2,row_resid2,col_resid2
         end
     end
     return x,maxcount*subcount,norm2,row_resid2,col_resid2
