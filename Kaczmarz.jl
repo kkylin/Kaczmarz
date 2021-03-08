@@ -51,12 +51,12 @@ function solve(A::AbstractMatrix{T},
     ## precompute rows, their squared sums, and
     ## corresponding probabilities
     row     = map(i->conj(view(A,i,:)), 1:m)
-    rowsum  = map(r->sumabs2(r), row)
+    rowsum  = map(sumabs2, row)
     rowprob = rowsum ./ sum(rowsum)
 
     ## same for cols
     col     = map(j->view(A,:,j), 1:n)
-    colsum  = map(c->sumabs2(c), col)
+    colsum  = map(sumabs2, col)
     colprob = colsum ./ sum(colsum)
     
     ## these are needed for the convergence test
