@@ -1,6 +1,6 @@
 module Util
 
-export TimeReporter
+export TimeReporter,rpick
 
 function TimeReporter(maxcount;
                       tag="",
@@ -52,6 +52,20 @@ end
 
 function chop(t::Float64; n::Int64=3)
     floor(Int,t*10^n)/10^n
+end
+
+## There is a library that does this, but it's just as easy
+## to write it.
+function rpick(probs)
+    u = rand()
+    s = 0.0
+    for i = 1:length(probs)
+        s += probs[i]
+        if u <= s
+            return i
+        end
+    end
+    return length(probs)
 end
 
 end#module
