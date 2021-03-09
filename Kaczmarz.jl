@@ -83,9 +83,9 @@ function solve(A::AbstractMatrix{T},
     ## progress report
     update = TimeReporter(maxcount*subcount; tag="Kaczmarz", period=period)
 
-    ## In the paper, the algorithm is formulated as a pair
-    ## of nested loops.  Here I have unrolled the loops so
-    ## that ETA is calculated correctly.
+    ## The algorithm alterntaes between (approximately)
+    ## projecting the right hand side (the b in Ax=b) into
+    ## the range of A, and solving for x in Ax=b.
     for c=1:maxcount
         for cc=1:subcount
             i = rpick(rowprob)
@@ -123,8 +123,13 @@ function solve(A::AbstractMatrix{T},
     return x,maxcount*subcount,norm2,row_resid2,col_resid2
 end
 
+## Users can provide their own implementation of this to
+## improve performance.  See BlockToeplitz.jl for an
+## example.
 sumabs2(x::AbstractVector) = sum(abs2,x)
 
+## There is a library that does this, but it's just as easy
+## to write it.
 function rpick(probs)
     u = rand()
     s = 0.0
