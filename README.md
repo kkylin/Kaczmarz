@@ -7,6 +7,7 @@ method (REK) method as described in
 solving least squares," *SIAM J. Matrix Anal. Appl.*  **34**
 (2013),
 [doi:10.1137/120889897](https://doi.org/10.1137/120889897)
+and [arXiv:1205.5770](https://arxiv.org/abs/1205.5770).
 
 This code is the result of my effort to understand the
 algorithm.  There are some toy tests, but it has not been
@@ -24,13 +25,14 @@ matrix structures you like.
 The main test scripts are
 
 - [BTtest-backslash.jl](https://github.com/kkylin/Kaczmarz/blob/github/BTtest-backslash.jl): generate a test least-squares problem
-  and solve it using Julia's `\`, which presumably uses SVD;
+  and solve it using Julia's `\`;
   and
 
 - [BTtest-kaczmarz.jl](https://github.com/kkylin/Kaczmarz/blob/github/BTtest-kaczmarz.jl): generate a test least-squares problem
   and solve it using REK.
 
-This implementation of REK seems reasonably fast, and has
-good memory usage compared to, e.g., SVD.
+For Toeplitz problems, this implementation of REK seems
+reasonably fast, and only requires storing the block column
+matrix.
 
 [Kevin K Lin](https://math.arizona.edu/~klin)
