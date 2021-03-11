@@ -50,17 +50,19 @@ function solve(A::AbstractMatrix{T},
 
     ## precompute rows, their squared sums, and
     ## corresponding probabilities
-    row     = map(i->conj(view(A,i,:)), 1:m)
-    rowsum  = map(sumabs2, row)
-    rowprob = rowsum ./ sum(rowsum)
+    row      = map(i->conj(view(A,i,:)), 1:m)
+    rowsum   = map(sumabs2, row)
+    rowtotal = sum(rowsum)
+    rowprob  = rowtotal > 0 ? rowsum ./ rowtotal : rowsum
 
     ## same for cols
     col     = map(j->view(A,:,j), 1:n)
     colsum  = map(sumabs2, col)
-    colprob = colsum ./ sum(colsum)
+    coltotal = sum(colsum)
+    colprob = coltotal > 0 ? colsum ./ coltotal : colsum
     
     ## these are needed for the convergence test
-    Asum      = sum(rowsum)
+    Asum      = max(sum(colsum),sum(rowsum))
     epsFnorm2 = eps^2 * Asum
 
     ## the paper suggests this (presumably) because the
