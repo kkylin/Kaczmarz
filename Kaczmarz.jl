@@ -89,21 +89,20 @@ function solve(A::AbstractMatrix{T},
     for c=1:maxcount
         for cc=1:subcount
 
+            ## make z orthogonal to col[j]
             j = rpick(colprob)
-
-            ## make z orthogonal to the jth column
-            # z .-= dot(col[j],z)/colsum[j] .* col[j]
             BLAS.axpy!(-dot(col[j],z)/colsum[j], col[j], z)
 
+            ## project x onto the hyperplane {x|dot(row[i],x)=b[i]-z[i]}
             i = rpick(rowprob)
-            ## project x onto the hyperplane defined by the ith row and b[i]-z[i]
-            # x .+= (b[i] - z[i] - dot(row[i],x)) / rowsum[i] .* row[i]
             BLAS.axpy!((b[i] - z[i] - dot(row[i],x)) / rowsum[i], row[i], x)
 
             ## progress report
             update()
         end
-        ## don't check too often
+
+        ## don't check too often as the error estimates are
+        ## expensive
         norm2 = sumabs2(x)
         row_resid2 = sum(iabs2,1:m)
         col_resid2 = sum(jabs2,1:n)
