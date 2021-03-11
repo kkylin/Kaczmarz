@@ -83,17 +83,20 @@ function solve(A::AbstractMatrix{T},
     ## progress report
     update = TimeReporter(maxcount*subcount; tag="Kaczmarz", period=period)
 
-    ## The algorithm alterntaes between (approximately)
-    ## projecting the right hand side (the b in Ax=b) into
-    ## the range of A, and solving for x in Ax=b.
+    ## The algorithm alternates between moving the right
+    ## hand side (the b in Ax=b) closer to col(A), and
+    ## solving for x.
     for c=1:maxcount
         for cc=1:subcount
-            i = rpick(rowprob)
+
             j = rpick(colprob)
 
+            ## make z orthogonal to the jth column
             # z .-= dot(col[j],z)/colsum[j] .* col[j]
             BLAS.axpy!(-dot(col[j],z)/colsum[j], col[j], z)
 
+            i = rpick(rowprob)
+            ## project x onto the hyperplane defined by the ith row and b[i]-z[i]
             # x .+= (b[i] - z[i] - dot(row[i],x)) / rowsum[i] .* row[i]
             BLAS.axpy!((b[i] - z[i] - dot(row[i],x)) / rowsum[i], row[i], x)
 
@@ -138,7 +141,12 @@ function test(::Type{Float64},m=3,n=3; flags...)
     b = randn(m)
     @time x0 = A\b
     @time x1,k = solve(A,b; flags...)
-    (backslash = x0, kaczmarz = x1, itercount = k) 
+    (
+        backslash = x0,
+        kaczmarz = x1,
+        err = norm(backslash-kaczmarz),
+        itercount = k,
+     )
 end
 
 function test(::Type{Complex{Float64}},m=3,n=3; flags...)
@@ -152,7 +160,12 @@ function test(::Type{Complex{Float64}},m=3,n=3; flags...)
     @show norm(backslash)
     print("## ")
     @show norm(kaczmarz)
-    (backslash = backslash, kaczmarz = kaczmarz, count = count) 
+    (
+        backslash = backslash,
+        kaczmarz = kaczmarz,
+        err = norm(backslash-kaczmarz),
+        count = count,
+    ) 
 end
 
 end#module
