@@ -54,6 +54,8 @@
 
 module BlockToeplitz
 
+include("Kaczmarz.jl")
+
 using LinearAlgebra
 
 export BTMatrix
@@ -164,7 +166,7 @@ conj(v::BTRow) = BTConj(v)
 ## referenced sequentially.  Of course in operations like
 ## dot(), what we gain in locality on one argument, we'll
 ## lose on the other.  So maybe not worth the trouble.
-import Kaczmarz:sumabs2
+import .Kaczmarz:sumabs2
 import LinearAlgebra:dot,BLAS.axpy!
 
 function dot(x::BTConj{T}, y::AbstractVector{T}) where T
