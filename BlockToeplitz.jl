@@ -170,7 +170,7 @@ import .Kaczmarz:sumabs2
 import LinearAlgebra:dot,BLAS.axpy!
 
 function dot(x::BTConj{T}, y::AbstractVector{T}) where T
-    foreachrowblock(x, y; accum=sum) do xblk,yblk
+    foreachrowblock(sum, x, y) do xblk,yblk
         BLAS.dotu(xblk,yblk)
     end
 end
@@ -184,12 +184,14 @@ end
 
 ## this is the one Kaczmarz-specific optimization
 function sumabs2(x::Union{BTRow{T},BTConj{T}}) where T
-    foreachrowblock(x; accum=sum) do xblk
+    foreachrowblock(sum, x) do xblk
         sum(abs2,xblk)
     end
 end
 
-function foreachrowblock(f::Function, x::BTConj{T}; accum=foreach) where T <:Union{Complex{Float64},Float64}
+foreachrowblock(f::Function, x::BTConj{T}) where T <:Union{Complex{Float64},Float64} = foreachrowblock(f, foreach, x)
+
+function foreachrowblock(f::Function, accum::Function, x::BTConj{T}) where T <:Union{Complex{Float64},Float64}
     r = x.v.A.r
     A = x.v.A.a
     i = x.v.i
@@ -197,7 +199,9 @@ function foreachrowblock(f::Function, x::BTConj{T}; accum=foreach) where T <:Uni
     accum(k->f(view(A,i-k+r,:)),1:r)
 end
 
-function foreachrowblock(f::Function, x::BTConj{T}, y::AbstractVector{T}; accum=foreach) where T <:Union{Complex{Float64},Float64}
+foreachrowblock(f::Function, x::BTConj{T}, y::AbstractVector{T}) where T <:Union{Complex{Float64},Float64} = foreachrowblock(f, foreach, x, y)
+
+function foreachrowblock(f::Function, accum::Function, x::BTConj{T}, y::AbstractVector{T}) where T <:Union{Complex{Float64},Float64}
     r = x.v.A.r
     A = x.v.A.a
     i = x.v.i
