@@ -77,9 +77,6 @@ function solve(A::AbstractMatrix{T},
     z = copy(b)  ## we'll be modifying z and b shouldn't change
     x = zeros(T,n)
 
-    iabs2(i) = abs2(dot(row[i],x) - b[i] + z[i])
-    jabs2(j) = abs2(dot(col[j],z))
-
     norm2 = row_resid2 = col_resid2 = 0.
 
     ## progress report
@@ -106,8 +103,8 @@ function solve(A::AbstractMatrix{T},
         ## don't check too often as the error estimates are
         ## expensive
         norm2 = sumabs2(x)
-        row_resid2 = sum(iabs2,1:m)
-        col_resid2 = sum(jabs2,1:n)
+        row_resid2 = sum(i->abs2(dot(row[i],x) - b[i] + z[i]), 1:m)
+        col_resid2 = sum(j->abs2(dot(col[j],z)), 1:n)
         threshold  = epsFnorm2*norm2
 
         if verbose
