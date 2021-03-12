@@ -39,11 +39,11 @@ export solve
 
 function solve(A::AbstractMatrix{T},
                b::AbstractVector{T};
-               eps      = 1e-6,  ## relative error tolerance
-               maxcount = 1000,
-               delay    = 10,  ## report freq, in sec
-               verbose  = true,
-               period   = 10.0,
+               eps          = 1e-6, ## relative error tolerance
+               maxcount     = 1000, ## max number outer loops
+               delay        = 10,   ## report freq, in sec
+               verbose      = true,
+               reportperiod = 10.0, # sec
                ) where T <: Number
 
     m,n = size(A)
@@ -80,7 +80,13 @@ function solve(A::AbstractMatrix{T},
     norm2 = row_resid2 = col_resid2 = 0.
 
     ## progress report
-    update = TimeReporter(maxcount*subcount; tag="Kaczmarz", period=period)
+    update = if verbose
+                TimeReporter(maxcount*subcount;
+                             tag="Kaczmarz",
+                             period=reportperiod)
+             else
+                 ()->nothing
+             end
 
     ## The algorithm alternates between moving the right
     ## hand side (the b in Ax=b) closer to col(A), and
