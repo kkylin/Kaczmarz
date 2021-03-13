@@ -41,12 +41,16 @@ function solve(A::AbstractMatrix{T},
                b::AbstractVector{T};
                eps          = 1e-6, ## relative error tolerance
                maxcount     = 1000, ## max number outer loops
+               rescale      = false,
                delay        = 10,   ## report freq, in sec
                verbose      = true,
                reportperiod = 10.0, # sec
                ) where T <: Number
 
     m,n = size(A)
+
+    ## row-wise scaling factors
+    a = ones(m)
 
     ## precompute rows, their squared sums, and
     ## corresponding probabilities
@@ -55,24 +59,47 @@ function solve(A::AbstractMatrix{T},
     rowtotal = sum(rowsum)
     rowprob  = rowtotal > 0 ? rowsum ./ rowtotal : rowsum
 
+    # show(stdout, "text/plain", A)
+    # println()
+    # show(stdout, "text/plain", Diagonal(1 ./ sqrt.(rowsum)) * A)
+    # println()
+
+    if rescale
+        let k = findall(x->x>0,rowsum)
+            a[k]    .= 1 ./ sqrt.(rowsum[k])
+            rowsum   = map(i->a[i]^2*sumabs2(row[i]), 1:m)
+            rowtotal = sum(rowsum)
+            rowprob  = rowtotal > 0 ? rowsum ./ rowtotal : rowsum
+            # @show a
+            # @show rowsum
+            # @show rowprob
+        end
+    end
+
     ## same for cols
     col     = map(j->view(A,:,j), 1:n)
-    colsum  = map(sumabs2, col)
+    colsum  = map(j->sumabs2(a.*col[j]), 1:n)
     coltotal = sum(colsum)
     colprob = coltotal > 0 ? colsum ./ coltotal : colsum
+
+    # @show colsum
+
+    # show(stdout, "text/plain", hcat([a.*c for c in col]...))
+    # println()
+    # show(stdout, "text/plain", transpose(hcat([a[i]*row[i] for i=1:m]...)))
+    # println()
     
     ## these are needed for the convergence test
-    Asum      = max(sum(colsum),sum(rowsum))
-    epsFnorm2 = eps^2 * Asum
+    epsFnorm2 = eps^2 * max(sum(colsum),sum(rowsum))
 
     ## the paper suggests this (presumably) because the
     ## error check is actually pretty expensive
     subcount = 8*min(m,n)  
 
-    verbose && @show (m,n,subcount,Asum)
+    verbose && @show (m,n,subcount)
 
     ## main loop
-    z = copy(b)  ## we'll be modifying z and b shouldn't change
+    z = copy(b)
     x = zeros(T,n)
 
     norm2 = row_resid2 = col_resid2 = 0.
@@ -80,7 +107,7 @@ function solve(A::AbstractMatrix{T},
     ## progress report
     if verbose
         update = TimeReporter(maxcount*subcount;
-                              tag="Kaczmarz",
+                              tag="kaczmarz",
                               period=reportperiod)
     else
         update = ()->nothing
@@ -94,11 +121,11 @@ function solve(A::AbstractMatrix{T},
 
             ## make z orthogonal to col[j]
             j = rpick(colprob)
-            BLAS.axpy!(-dot(col[j],z)/colsum[j], col[j], z)
+            BLAS.axpy!(-dot(a .* col[j],a .* z)/colsum[j], col[j], z)
 
             ## project x onto the hyperplane {x|dot(row[i],x)=b[i]-z[i]}
             i = rpick(rowprob)
-            BLAS.axpy!((b[i] - z[i] - dot(row[i],x)) / rowsum[i], row[i], x)
+            BLAS.axpy!(a[i]^2*(b[i] - z[i] - dot(row[i],x)) / rowsum[i], row[i], x)
 
             ## progress report
             update()
@@ -107,8 +134,8 @@ function solve(A::AbstractMatrix{T},
         ## don't check too often as the error estimates are
         ## expensive
         norm2 = sumabs2(x)
-        row_resid2 = sum(i->abs2(dot(row[i],x) - b[i] + z[i]), 1:m)
-        col_resid2 = sum(j->abs2(dot(col[j],z)), 1:n)
+        row_resid2 = sum(i->a[i]^2*abs2(dot(row[i],x) - b[i] + z[i]), 1:m)
+        col_resid2 = sum(j->abs2(dot(a .* col[j],z)), 1:n)
         threshold  = epsFnorm2*norm2
 
         if verbose
