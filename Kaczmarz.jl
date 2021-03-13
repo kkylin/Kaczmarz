@@ -59,20 +59,12 @@ function solve(A::AbstractMatrix{T},
     rowtotal = sum(rowsum)
     rowprob  = rowtotal > 0 ? rowsum ./ rowtotal : rowsum
 
-    # show(stdout, "text/plain", A)
-    # println()
-    # show(stdout, "text/plain", Diagonal(1 ./ sqrt.(rowsum)) * A)
-    # println()
-
     if rescale
         let k = findall(x->x>0,rowsum)
             a[k]    .= 1 ./ sqrt.(rowsum[k])
             rowsum   = map(i->a[i]^2*sumabs2(row[i]), 1:m)
             rowtotal = sum(rowsum)
             rowprob  = rowtotal > 0 ? rowsum ./ rowtotal : rowsum
-            # @show a
-            # @show rowsum
-            # @show rowprob
         end
     end
 
@@ -82,13 +74,6 @@ function solve(A::AbstractMatrix{T},
     coltotal = sum(colsum)
     colprob = coltotal > 0 ? colsum ./ coltotal : colsum
 
-    # @show colsum
-
-    # show(stdout, "text/plain", hcat([a.*c for c in col]...))
-    # println()
-    # show(stdout, "text/plain", transpose(hcat([a[i]*row[i] for i=1:m]...)))
-    # println()
-    
     ## these are needed for the convergence test
     epsFnorm2 = eps^2 * max(sum(colsum),sum(rowsum))
 
@@ -139,6 +124,7 @@ function solve(A::AbstractMatrix{T},
         threshold  = epsFnorm2*norm2
 
         if verbose
+            println("\nouter loop ", c)
             @show norm2
             @show row_resid2
             @show col_resid2
@@ -158,6 +144,7 @@ end
 ## improve performance.  See BlockToeplitz.jl for an
 ## example.
 sumabs2(x::AbstractVector) = sum(abs2,x)
+
 
 ################################
 ## some simple tests
