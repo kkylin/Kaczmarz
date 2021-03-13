@@ -112,6 +112,7 @@ function solve(A::AbstractMatrix{T},
         threshold  = epsFnorm2*norm2
 
         if verbose
+            println("\nouter loop ", c)
             @show norm2
             @show row_resid2
             @show col_resid2
