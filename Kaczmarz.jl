@@ -69,9 +69,7 @@ function solve(A::AbstractMatrix{T},
     ## error check is actually pretty expensive
     subcount = 8*min(m,n)  
 
-    if verbose
-        @show (m,n,subcount,Asum)
-    end
+    verbose && @show (m,n,subcount,Asum)
 
     ## main loop
     z = copy(b)  ## we'll be modifying z and b shouldn't change
@@ -80,13 +78,13 @@ function solve(A::AbstractMatrix{T},
     norm2 = row_resid2 = col_resid2 = 0.
 
     ## progress report
-    update = if verbose
-                TimeReporter(maxcount*subcount;
-                             tag="Kaczmarz",
-                             period=reportperiod)
-             else
-                 ()->nothing
-             end
+    if verbose
+        update = TimeReporter(maxcount*subcount;
+                              tag="Kaczmarz",
+                              period=reportperiod)
+    else
+        update = ()->nothing
+    end
 
     ## The algorithm alternates between moving the right
     ## hand side (the b in Ax=b) closer to col(A), and
