@@ -23,7 +23,7 @@ function test(::Type{Float64},m=100,n=3,r=5; method = :backslash, flags...)
     if method === :backslash
         x = A\b
     elseif method === :kaczmarz
-        x,iters,norm2,row_resid2,col_resid2 = solve(A,b; flags...)
+        x,outercount,iters,norm2,row_resid2,col_resid2 = solve(A,b; flags...)
     else
         error("unknown method $method")
     end
@@ -57,7 +57,7 @@ function test(::Type{Complex128},m=100,n=3,r=5; method = :backslash, flags...)
     if method === :backslash
         x = A\b
     elseif method === :kaczmarz
-        x,iters,norm2,row_resid2,col_resid2 = solve(A,b; flags...)
+        x,outercount,iters,norm2,row_resid2,col_resid2 = solve(A,b; flags...)
     else
         error("unknown method $method")
     end
