@@ -134,22 +134,24 @@ function solve(A::AbstractMatrix{T},
         
         if ( row_resid2 <= threshold && col_resid2 <= threshold )
             verbose && println("#Kaczmarz: early exit")
-            return ( x=x,
-                     outercount=c,
-                     innercount=c*subcount,
-                     norm2=norm2,
-                     row_resid2=row_resid2,
-                     col_resid2=col_resid2,
+            return ( sol        = x,
+                     outercount = c,
+                     innercount = c*subcount,
+                     norm2      = norm2,
+                     row_resid2 = row_resid2,
+                     col_resid2 = col_resid2,
+                     threshold  = threshold,
                      )
         end
     end
     verbose && println("#Kaczmarz: $maxcount outer loops reached")
-    return ( x=x,
-             outercount=maxcount,
-             innercount=maxcount*subcount,
-             norm2=norm2,
-             row_resid2=row_resid2,
-             col_resid2=col_resid2,
+    return ( sol        = x,
+             outercount = maxcount,
+             innercount = maxcount*subcount,
+             norm2      = norm2,
+             row_resid2 = row_resid2,
+             col_resid2 = col_resid2,
+             threshold  = threshold,
              )
 end
 
