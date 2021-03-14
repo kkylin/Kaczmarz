@@ -141,6 +141,7 @@ function solve(A::AbstractMatrix{T},
                      row_resid2 = row_resid2,
                      col_resid2 = col_resid2,
                      threshold  = threshold,
+                     reltol     = eps,
                      )
         end
     end
@@ -152,6 +153,7 @@ function solve(A::AbstractMatrix{T},
              row_resid2 = row_resid2,
              col_resid2 = col_resid2,
              threshold  = threshold,
+             reltol     = eps,
              )
 end
 
