@@ -76,7 +76,7 @@ function solve(A::AbstractMatrix{T},
     z = copy(b)  ## we'll be modifying z and b shouldn't change
     x = zeros(T,n)
 
-    norm2 = row_resid2 = col_resid2 = 0.
+    norm2 = row_resid2 = col_resid2 = threshold = 0.
 
     ## progress report
     if verbose
