@@ -44,6 +44,7 @@ function solve(A::AbstractMatrix{T},
                rescale      = false,
                delay        = 10,   ## report freq, in sec
                verbose      = true,
+               verbosity    = verbose ? 1 : 0,
                reportperiod = 10.0, # sec
                ) where T <: Number
 
@@ -123,7 +124,7 @@ function solve(A::AbstractMatrix{T},
         col_resid2 = sum(j->abs2(dot(a .* col[j],z)), 1:n)
         threshold  = epsFnorm2*norm2
 
-        if verbose
+        if verbosity >= 2
             println("\nouter loop ", c)
             @show norm2
             @show row_resid2
@@ -133,11 +134,23 @@ function solve(A::AbstractMatrix{T},
         
         if ( row_resid2 <= threshold && col_resid2 <= threshold )
             verbose && println("#Kaczmarz: early exit")
-            return x,c*subcount,norm2,row_resid2,col_resid2
+            return ( x=x,
+                     outercount=c,
+                     innercount=c*subcount,
+                     norm2=norm2,
+                     row_resid2=row_resid2,
+                     col_resid2=col_resid2,
+                     )
         end
     end
     verbose && println("#Kaczmarz: $maxcount outer loops reached")
-    return x,maxcount*subcount,norm2,row_resid2,col_resid2
+    return ( x=x,
+             outercount=maxcount,
+             innercount=maxcount*subcount,
+             norm2=norm2,
+             row_resid2=row_resid2,
+             col_resid2=col_resid2,
+             )
 end
 
 ## Users can provide their own implementation of this to
