@@ -88,7 +88,7 @@ function solve(A::AbstractMatrix{T},
     z = copy(b)
     x = zeros(T,n)
 
-    norm2 = row_resid2 = col_resid2 = 0.
+    norm2 = row_resid2 = col_resid2 = threshold = 0.
 
     ## progress report
     if verbose
