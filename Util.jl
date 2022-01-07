@@ -5,7 +5,7 @@ export TimeReporter,rpick
 function TimeReporter(maxcount;
                       tag="",
                       period=60.0, # sec
-                      thunk=()->nothing,
+                      verbose=true,
                       )
 
     let t0    = time(),
@@ -17,13 +17,17 @@ function TimeReporter(maxcount;
             dt = time() - t0
             if dt >= tlast + period
                 tlast = dt
-                println("#", tag, ": ", count, "/",
-                        maxcount,
-                        " steps took ",
-                        nicedate(dt), "; eta ",
-                        nicedate((dt/count)*(maxcount-count)))
-                thunk()
-                flush(stdout)
+                if verbose
+                    println("#", tag, ": ", count, "/",
+                            maxcount,
+                            " steps took ",
+                            nicedate(dt), "; eta ",
+                            nicedate((dt/count)*(maxcount-count)))
+                    flush(stdout)
+                end
+                return true
+            else
+                return false
             end
         end
     end
