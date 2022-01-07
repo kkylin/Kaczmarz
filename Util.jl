@@ -5,6 +5,7 @@ export TimeReporter,rpick
 function TimeReporter(maxcount;
                       tag="",
                       period=60.0, # sec
+                      thunk=()->nothing,
                       )
 
     let t0    = time(),
@@ -21,6 +22,7 @@ function TimeReporter(maxcount;
                         " steps took ",
                         nicedate(dt), "; eta ",
                         nicedate((dt/count)*(maxcount-count)))
+                thunk()
                 flush(stdout)
             end
         end
