@@ -72,7 +72,7 @@ function solve(A::AbstractMatrix{T},
     ## error check is actually pretty expensive
     subcount = 8*min(m,n)  
 
-    verbose && @show (m,n,subcount)
+    verbosity >= 1 && @show (m,n,subcount)
 
     ## main loop
     z = copy(b)
@@ -81,12 +81,20 @@ function solve(A::AbstractMatrix{T},
     norm2 = row_resid2 = col_resid2 = threshold = 0.
 
     ## progress report
-    if verbose
+    update = ()->false
+    outer_update = ()->false
+    
+    if verbosity >= 1
         update = TimeReporter(maxcount*subcount;
                               tag="kaczmarz",
                               period=reportperiod)
-    else
-        update = ()->nothing
+
+        if verbosity >= 2
+            outer_update = TimeReporter(maxcount;
+                                        tag="kaczmarz-outer",
+                                        period=reportperiod,
+                                        verbose=false)
+        end
     end
 
     ## The algorithm alternates between moving the right
@@ -114,7 +122,7 @@ function solve(A::AbstractMatrix{T},
         col_resid2 = sum(j->abs2(dot(a .* col[j],z)), 1:n)
         threshold  = epsFnorm2*norm2
 
-        if verbosity >= 2
+        if outer_update()
             println("\nouter loop ", c)
             @show norm2
             @show row_resid2
@@ -123,7 +131,7 @@ function solve(A::AbstractMatrix{T},
         end
         
         if ( row_resid2 <= threshold && col_resid2 <= threshold )
-            verbose && println("#Kaczmarz: early exit")
+            verbosity >= 1 && println("#Kaczmarz: early exit")
             return ( sol        = x,
                      outercount = c,
                      innercount = c*subcount,
@@ -135,7 +143,7 @@ function solve(A::AbstractMatrix{T},
                      )
         end
     end
-    verbose && println("#Kaczmarz: $maxcount outer loops reached")
+    verbosity >= 1 && println("#Kaczmarz: $maxcount outer loops reached")
     return ( sol        = x,
              outercount = maxcount,
              innercount = maxcount*subcount,
