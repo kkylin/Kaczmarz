@@ -41,7 +41,6 @@ function solve(A::AbstractMatrix{T},
                b::AbstractVector{T};
                eps          = 1e-6, ## relative error tolerance
                maxcount     = 1000, ## max number outer loops
-               rescale      = false,
                delay        = 10,   ## report freq, in sec
                verbose      = true,
                verbosity    = verbose ? 1 : 0,
@@ -59,15 +58,6 @@ function solve(A::AbstractMatrix{T},
     rowsum   = map(sumabs2, row)
     rowtotal = sum(rowsum)
     rowprob  = rowtotal > 0 ? rowsum ./ rowtotal : rowsum
-
-    if rescale
-        let k = findall(x->x>0,rowsum)
-            a[k]    .= 1 ./ sqrt.(rowsum[k])
-            rowsum   = map(i->a[i]^2*sumabs2(row[i]), 1:m)
-            rowtotal = sum(rowsum)
-            rowprob  = rowtotal > 0 ? rowsum ./ rowtotal : rowsum
-        end
-    end
 
     ## same for cols
     col     = map(j->view(A,:,j), 1:n)
